@@ -22,13 +22,58 @@
 #include "fileops.h"
 #include "stringops.h"
 #include "gopt.h"
+#include "firstrun.h"
 
+static void initctlfile(const char *ctlfile);
+static void sanitycheck(int argc, char **argv);
 
 int main(int argc, char **argv)
 {
 	options_t opts = process_options(argc, argv);
+	char *ctlfile = NULL;
+	char *csvfile = NULL;
+	if (opts.controlfile) {
+		if (fileexists(argv[1])) {
+			fprintf(stderr, "File exists: %s! Quitting", argv[1]);
+			exit(EXIT_FAILURE);
+		}
+		ctlfile = argv[1];
+		initctlfile(ctlfile);
+		exit(EXIT_SUCCESS);
+	}
 	
-	/* process non-option arguments */
+	/* check files exist */
+	sanitycheck(argc, argv);
+	
 	
 	return 0;
 } // main()
+
+void initctlfile(const char *ctlfile)
+{
+	if (checkfirstrun("csv2html")) {
+		firstrun("csv2html", "master.xml", "csv2html.cfg", NULL);
+		fprintf(stdout, "Please edit: %s/.config/%s and try again\n", 
+						getenv("HOME"), "csv2html.cfg");
+		exit(EXIT_SUCCESS);
+	}
+}
+
+void sanitycheck(int argc, char **argv)
+{
+	if (argc < 3) {
+		fprintf(stderr, 
+		"You must name a control file and csv data file, quiting.\n");
+		dohelp(EXIT_FAILURE);
+	}
+	char *f1 = argv[1];
+	if (fileexists(f1) == -1) {
+		fprintf(stderr, "No such file: %s\n", f1);
+		dohelp(EXIT_FAILURE);		
+	}
+	char *f2 = argv[2];
+	if (fileexists(f2) == -1) {
+		fprintf(stderr, "No such file: %s\n", f2);
+		dohelp(EXIT_FAILURE);		
+	}
+}
