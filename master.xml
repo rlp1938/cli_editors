@@ -1,0 +1,59 @@
+<master>
+<comment>
+	Everything between the 'text' tags comprises a C language format
+	statement and will be used as such.
+</comment>
+<text>
+	<pagesize>
+		<width>%dmm</width>
+		<height>%dmm</height>
+	</pagesize>
+	<titlepage>
+		<h1 style="text-align: center; top-margin: %dmm">
+		The front page title goes here
+		</h1>
+	</titlepage>
+	<tabdata>
+<table style="page-break-before: always">
+	/* If you don't want 'thead' you can wrap C style comments (like
+	this one) around the opening and closing tags. Like wise for the
+	'tfoot' below. */
+	<thead>
+		<tr>
+			<th>Col 1</th><th>Col 2</th><th>Col 3</th>
+		</tr>
+	</thead>
+	<tfoot>
+		<tr>
+			<td>Ftr 1</td><td>Ftr 2</td><td>Ftr 3</td><td>
+		</tr>
+	</tfoot>
+	<tbody>
+		// program generated data goes here.
+	</tbody>
+</table>
+	</tabdata>
+	<gpl>
+<!--
+ %s
+
+ Copyright %d %s %s
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ MA 02110-1301, USA.
+-->
+	</gpl>
+</text>
+</master>
