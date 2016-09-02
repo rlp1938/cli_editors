@@ -1,0 +1,25 @@
+/* master.css */
+.odd {
+	background-color: #e0e0e0;
+}
+.even {
+	background-color: #ffffff;
+}
+
+table th td {
+	border: none;
+}
+
+th {
+	font-weight: bold;
+}
+
+.recto {
+	margin-left: 15mm;
+	margin-right: 0;
+}
+
+.verso {
+	margin-left: 0;
+	margin-right: 15mm
+}

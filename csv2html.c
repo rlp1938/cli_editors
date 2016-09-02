@@ -26,10 +26,12 @@
 
 static void initctlfile(const char *ctlfile);
 static void sanitycheck(int argc, char **argv);
+static void initsetup(void);
 
 int main(int argc, char **argv)
 {
 	options_t opts = process_options(argc, argv);
+	if (checkfirstrun("csv2html")) initsetup();
 	char *ctlfile = NULL;
 	char *csvfile = NULL;
 	if (opts.controlfile) {
@@ -77,3 +79,12 @@ void sanitycheck(int argc, char **argv)
 		dohelp(EXIT_FAILURE);		
 	}
 }
+
+void initsetup(void)
+{	// invokes firstrun() 
+	firstrun("csv2html", "csv2html.cfg", "master.html", "master.xml",
+				"master.css", NULL);
+	fprintf(stdout, "Please edit %s/.config/csv2html/csv2html.cfg",
+					getenv("HOME"));
+} // initsetup()
+

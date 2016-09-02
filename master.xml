@@ -1,20 +1,47 @@
 <master>
 <comment>
-	Everything between the 'text' tags comprises a C language format
+	Everything between the 'cformat' tags comprises a C language format
 	statement and will be used as such.
 </comment>
-<text>
+<cformat>
+	<htmlfn>	// the html filename, accept default or change it.
+	index.html
+	</htmlfn>
+	<copywrite>
+		<year>%d</year>
+		<author>%s</author>
+		<email>%s</email>
+	</copywrite>
 	<pagesize>
 		<width>%dmm</width>
 		<height>%dmm</height>
 	</pagesize>
-	<titlepage>
-		<h1 style="text-align: center; top-margin: %dmm">
-		The front page title goes here
-		</h1>
-	</titlepage>
-	<tabdata>
-<table style="page-break-before: always">
+	<printmargins>
+		/* These are the page setup margins you will use when printing
+		the generated html. Change the numbers as required.
+		*/
+		<unit>mm</unit>	// do not change the unit!
+		<top>10</top>
+		<bottom>10</bottom>
+		<left>10</left>
+		<right>10</right>
+	</printmargins>
+	<title>	// change this text, it's both 'title' and front page header
+	This is the title
+	</title>
+	<rowsperpage>
+	/* The value 20 is likely fine for table where the cells average 
+		about 2.5 lines each. Lower this if you have tall columns */
+		20
+	</rowsperpage>
+	<rowlist>
+		/* list of rows per page, these values are set by experiment
+		T1 T2 T3 T4 etc */
+		20, 20, ...
+		/* there must be an entry for each page in the print out. */
+	</rowlist>
+<tabdata>
+<table>
 	/* If you don't want 'thead' you can wrap C style comments (like
 	this one) around the opening and closing tags. Like wise for the
 	'tfoot' below. */
@@ -32,28 +59,4 @@
 		// program generated data goes here.
 	</tbody>
 </table>
-	</tabdata>
-	<gpl>
-<!--
- %s
-
- Copyright %d %s %s
-
- This program is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
-
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program; if not, write to the Free Software
- Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- MA 02110-1301, USA.
--->
-	</gpl>
-</text>
-</master>
+</tabdata>
