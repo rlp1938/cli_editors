@@ -24,9 +24,10 @@
 #include "gopt.h"
 #include "firstrun.h"
 
-static void initctlfile(const char *ctlfile);
-static void sanitycheck(int argc, char **argv);
+static char *initctlfile(int optind, char **argv);
+static void sanitycheck(int optind, char **argv);
 static void initsetup(void);
+static void initfilecheck(int optind, char **argv);
 
 int main(int argc, char **argv)
 {
@@ -35,48 +36,34 @@ int main(int argc, char **argv)
 	char *ctlfile = NULL;
 	char *csvfile = NULL;
 	if (opts.controlfile) {
-		if (fileexists(argv[1])) {
-			fprintf(stderr, "File exists: %s! Quitting", argv[1]);
-			exit(EXIT_FAILURE);
-		}
-		ctlfile = argv[1];
-		initctlfile(ctlfile);
+		ctlfile = initctlfile(optind, argv);
 		exit(EXIT_SUCCESS);
 	}
 	
 	/* check files exist */
-	sanitycheck(argc, argv);
+	sanitycheck(optind, argv);
 	
 	
 	return 0;
 } // main()
 
-void initctlfile(const char *ctlfile)
-{
-	if (checkfirstrun("csv2html")) {
-		firstrun("csv2html", "master.xml", "csv2html.cfg", NULL);
-		fprintf(stdout, "Please edit: %s/.config/%s and try again\n", 
-						getenv("HOME"), "csv2html.cfg");
-		exit(EXIT_SUCCESS);
-	}
+char *initctlfile(int optind, char **argv)
+{	// control file must be named but must not exist.
+	initfilecheck(optind, argv);
+	return argv[optind];
 }
 
-void sanitycheck(int argc, char **argv)
+void sanitycheck(int optind, char **argv)
 {
-	if (argc < 3) {
-		fprintf(stderr, 
-		"You must name a control file and csv data file, quiting.\n");
-		dohelp(EXIT_FAILURE);
-	}
-	char *f1 = argv[1];
-	if (fileexists(f1) == -1) {
-		fprintf(stderr, "No such file: %s\n", f1);
-		dohelp(EXIT_FAILURE);		
-	}
-	char *f2 = argv[2];
-	if (fileexists(f2) == -1) {
-		fprintf(stderr, "No such file: %s\n", f2);
-		dohelp(EXIT_FAILURE);		
+	int ok = 1;
+	ok = (ok && (argv[optind]));
+	ok = (ok && (argv[optind+1]));
+	ok = (ok && (!(fileexists(argv[optind]))));
+	ok = (ok && (!(fileexists(argv[optind+1]))));
+	if (!(ok)) {
+		fprintf(stderr, "You must provide a control file and a csv file"
+						" name, and both files must exist.\n");
+		exit(EXIT_FAILURE);
 	}
 }
 
@@ -88,3 +75,14 @@ void initsetup(void)
 					getenv("HOME"));
 } // initsetup()
 
+void initfilecheck(int optind, char **argv)
+{
+	int ok = 1;
+	ok = (ok && (argv[optind]));
+	ok = (ok && (fileexists(argv[optind])));
+	if (!(ok)) {
+		fprintf(stderr, "You must provide a control file name.\n"
+				"If you want to renew the file delete it first.\n");
+		exit(EXIT_FAILURE);
+	}
+}
