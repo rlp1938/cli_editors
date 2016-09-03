@@ -16,30 +16,31 @@
 		<width>%dmm</width>
 		<height>%dmm</height>
 	</pagesize>
-	<printmargins>
-		/* These are the page setup margins you will use when printing
-		the generated html. Change the numbers as required.
-		*/
-		<unit>mm</unit>	// do not change the unit!
-		<top>10</top>
-		<bottom>10</bottom>
-		<left>10</left>
-		<right>10</right>
-	</printmargins>
-	<title>	// change this text, it's both 'title' and front page header
-	This is the title
-	</title>
-	<rowsperpage>
+
+<printmargins>
+	/* These are the page setup margins you will use when printing
+	the generated html. Change the numbers as required.
+	*/
+	<unit>mm</unit>	// do not change the unit!
+	<top>10</top>
+	<bottom>10</bottom>
+	<left>10</left>
+	<right>10</right>
+</printmargins>
+<title>	// change this text, it's both 'title' and front page header
+	this is the title
+</title>
+<rowsperpage>
 	/* The value 20 is likely fine for table where the cells average 
 		about 2.5 lines each. Lower this if you have tall columns */
 		20
-	</rowsperpage>
-	<rowlist>
-		/* list of rows per page, these values are set by experiment
-		T1 T2 T3 T4 etc */
-		20, 20, ...
-		/* there must be an entry for each page in the print out. */
-	</rowlist>
+</rowsperpage>
+<rowlist>
+	/* list of rows per page, these values are set by experiment
+	T1 T2 T3 T4 etc */
+	20, 20, ...
+	/* there must be an entry for each page in the print out. */
+</rowlist>
 <tabdata>
 <table>
 	/* If you don't want 'thead' you can wrap C style comments (like
@@ -60,3 +61,5 @@
 	</tbody>
 </table>
 </tabdata>
+</cformat>
+</master>
