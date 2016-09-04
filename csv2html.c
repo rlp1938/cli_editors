@@ -24,6 +24,26 @@
 #include "gopt.h"
 #include "firstrun.h"
 
+typedef struct htdata {
+	char *htfn;
+	char *title;
+	char *author;
+	char *email;
+	char *pw;
+	char *ph;
+	char *rowsperpage;
+	char *pagerowslist;
+	char *divpagetop_break;
+	char *divpagetop;
+	char *divrecto;
+	char *divverso;
+	char *thead;
+	char *trowodd;
+	char *troweven;
+	char *tfoot;
+} htdata;
+
+
 static char *initctlfile(int optind, char **argv);
 static void sanitycheck(int optind, char **argv);
 static void initsetup(void);
@@ -32,6 +52,13 @@ static int thisyear(void);
 static char *getcfgfile(char *subdir, char *fn);
 static void freelist(char **list);
 static void freevlist(char *item1, ...);
+static htdata *makehtdata(const char *fn);
+static void destroyhtdata(htdata *htd);
+static void isspace2spch(char *in);
+static char *tagstr(char *from, char *to, char *tagname);
+static char *tagstrnull(char *from, char *to, char *tagname);
+static char *multisp2single(char *in, char *out);
+static void comment2space(char *from, char *to);
 
 int main(int argc, char **argv)
 {
@@ -43,11 +70,14 @@ int main(int argc, char **argv)
 		ctlfile = initctlfile(optind, argv);
 		exit(EXIT_SUCCESS);
 	}
-	
 	/* check files exist */
 	sanitycheck(optind, argv);
-	
-	
+	ctlfile = argv[optind];
+	csvfile = argv[optind+1];
+	htdata *htd = makehtdata(ctlfile);
+	//titlepage(ctlfile);
+	// tables
+	//htmlend(ctlfile);
 	return 0;
 } // main()
 
@@ -77,7 +107,6 @@ char *initctlfile(int optind, char **argv)
 	freevlist(phs, pws, email, author, NULL);
 	free(mydat.from);
 	freelist(cfglines);
-
 	return fn;
 }
 
@@ -160,4 +189,163 @@ void freevlist(char *item1, ...)
 		free(cp);
 	}
 	va_end(ap);
+}
+
+htdata *makehtdata(const char *fn)
+{
+	fdata mydat = readfile( fn, 1, 1);
+	*(mydat.to-1) = 0;	// now a C string
+	comment2space(mydat.from, mydat.to);
+	isspace2spch(mydat.from);
+	multisp2single(mydat.from, mydat.from);
+	htdata *htd = docalloc(sizeof(htdata), 1, "mkhtdata");
+	htd->author = tagstr(mydat.from, mydat.to, "author");
+	htd->divpagetop = "<div>";	// yes weird
+	htd->divpagetop_break = 
+	"<div style=\"page-break-before: always\">";
+	htd->divrecto = "<div class=\"recto\">";
+	htd->divverso = "<div class=\"verso\">";
+	htd->email = tagstr(mydat.from, mydat.to, "email");
+	htd->htfn = tagstr(mydat.from, mydat.to, "htmlfn");
+	htd->pagerowslist = tagstr(mydat.from, mydat.to, "rowlist");
+	// the 2 below are number+"mm" as string. Convert when calcs needed.
+	htd->ph = tagstr(mydat.from, mydat.to, "height");
+	htd->pw = tagstr(mydat.from, mydat.to, "width");
+	htd->rowsperpage = tagstr(mydat.from, mydat.to, "rowsperpage");
+	// following 2 are allowed to be absent
+	htd->tfoot = tagstrnull(mydat.from, mydat.to, "tfoot");
+	htd->thead = tagstrnull(mydat.from, mydat.to, "thead");
+	htd->title = tagstr(mydat.from, mydat.to, "title");
+	htd->troweven = "<tr class=\"even\">";
+	htd->trowodd = "<tr class=\"odd\">";
+	free(mydat.from);
+	return htd;
+}
+
+void destroyhtdata(htdata *htd)
+{	// can't use freevlist 'cos it will quit at first NULL element found
+	if (htd->htfn) free(htd->htfn);
+	if (htd->title) free(htd->title);
+	if (htd->author) free(htd->author);
+	if (htd->email) free(htd->email);
+	if (htd->pw) free(htd->pw);
+	if (htd->ph) free(htd->ph);
+	if (htd->title) free(htd->title);
+	if (htd->rowsperpage) free(htd->rowsperpage);
+	if (htd->pagerowslist) free(htd->pagerowslist);
+	if (htd->divpagetop_break) free(htd->divpagetop_break);
+	if (htd->divpagetop) free(htd->divpagetop);
+	if (htd->divrecto) free(htd->divrecto);
+	if (htd->divverso) free(htd->divverso);
+	if (htd->thead) free(htd->thead);
+	if (htd->trowodd) free(htd->trowodd);
+	if (htd->troweven) free(htd->troweven);
+	if (htd->tfoot) free(htd->tfoot);
+	free(htd);
+}
+
+void isspace2spch(char *in)
+{	// everything isspace() becomes ' '
+	char *cp = in;
+	while (*cp) {
+		if (isspace(*cp)) *cp = ' ';
+		cp++;
+	}
+}
+
+char *multisp2single(char *in, char *out)
+{
+	char *buf = docalloc(strlen(in), 1, "multisp2single");
+	char *cp = in;
+	char *bp = buf;
+	int inspace = 0;
+	while (*cp) {
+		switch (*cp)
+		{
+			case ' ':
+				if (!inspace) {	// copy single space.
+					*bp = *cp;
+					bp++;
+				}
+				inspace = 1;
+				break;
+			default:
+				*bp = *cp;
+				bp++;
+				inspace = 0;
+				break;
+		}
+		cp++;
+	}
+	// There may still be leading and/or trailing space
+	cp = buf;
+	char *ep = buf + strlen(buf) - 1;
+	while (ep > cp && *ep == ' ') ep--;
+	*ep = 0;
+	while (cp < ep && *cp == ' ') cp++;
+	// NB reason why the caller can't use same buffer for in/out,
+	// out can only be smaller than in or the same.
+	strcpy(out, cp);
+	return out;
+}
+
+char *tagstr(char *from, char *to, char *tagname)
+{
+	strdata strdat = getdatafromtagnames(from, to, tagname);
+	// there may be ' ' in front and/or back of everything.
+	char *cp = strdat.from;
+	char *ep = strdat.to - 1;
+	while (*cp == ' ') cp++;
+	while (*ep == ' ') ep--;
+	ep++;
+	/* Deal with aberrant conditions:
+	 * <tag></tag>				returns NULL
+	 * <tag>       </tag>		returns NULL
+	 * <tag>  some_text  </tag>	returns "some_text"
+	*/
+	int buflen = ep - cp;	// must deal with cp >= ep
+	if (buflen < 1) return NULL;
+	char *buf = docalloc(buflen + 1, 1, "tagstr");
+	strncpy(buf, cp, buflen);
+	buf[buflen] = 0;
+	return buf;
+}
+
+char *tagstrnull(char *from, char *to, char *tagname)
+{	// in this case an absent tag may be a choice, not a fatal error
+	char tagfro[NAME_MAX];
+	sprintf(tagfro, "<%s>", tagname);
+	char *cp = memmem(from, to - from, tagfro, strlen(tagfro));
+	if (!cp) return NULL;
+	// else
+	return tagstr(from, to, tagname);
+}
+
+void comment2space(char *from, char *to)
+{	// comment_text_to_space() seems to be buggy - this is a rewrite
+	char *begin, *end;
+	begin = from;
+	while (1) {
+		begin = memmem(begin, to - from, "/*", 2);
+		if(!begin) break;
+		end = memmem(begin, to - begin, "*/", 2);
+		if (!end) {
+			fprintf(stderr, "No terminator:\n%.70s\n", begin);
+			exit(EXIT_FAILURE);
+		}
+		memset(begin, ' ', end - begin +2);
+		begin = end;
+	}
+	begin = from;
+	while (1) {
+		begin = memmem(begin, to - from, "//", 2);
+		if(!begin) break;
+		end = memchr(begin, '\n', to - begin);
+		if (!end) {
+			fprintf(stderr, "No terminator:\n%.70s\n", begin);
+			exit(EXIT_FAILURE);
+		}
+		memset(begin, ' ', end - begin);
+		begin = end;
+	}	
 }
