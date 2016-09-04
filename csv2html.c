@@ -27,6 +27,7 @@
 typedef struct htdata {
 	char *htfn;
 	char *title;
+	char *yy;
 	char *author;
 	char *email;
 	char *pw;
@@ -59,6 +60,8 @@ static char *tagstr(char *from, char *to, char *tagname);
 static char *tagstrnull(char *from, char *to, char *tagname);
 static char *multisp2single(char *in, char *out);
 static void comment2space(char *from, char *to);
+static void titlepage(htdata *htd);
+static void htmlend(const char *fn);
 
 int main(int argc, char **argv)
 {
@@ -75,9 +78,10 @@ int main(int argc, char **argv)
 	ctlfile = argv[optind];
 	csvfile = argv[optind+1];
 	htdata *htd = makehtdata(ctlfile);
-	//titlepage(ctlfile);
+	titlepage(htd);
 	// tables
-	//htmlend(ctlfile);
+	htmlend(htd->htfn);
+	//destroyhtdata(htd);
 	return 0;
 } // main()
 
@@ -218,6 +222,7 @@ htdata *makehtdata(const char *fn)
 	htd->title = tagstr(mydat.from, mydat.to, "title");
 	htd->troweven = "<tr class=\"even\">";
 	htd->trowodd = "<tr class=\"odd\">";
+	htd->yy = tagstr(mydat.from, mydat.to, "year");
 	free(mydat.from);
 	return htd;
 }
@@ -241,6 +246,7 @@ void destroyhtdata(htdata *htd)
 	if (htd->trowodd) free(htd->trowodd);
 	if (htd->troweven) free(htd->troweven);
 	if (htd->tfoot) free(htd->tfoot);
+	if (htd->yy) free(htd->yy);
 	free(htd);
 }
 
@@ -348,4 +354,25 @@ void comment2space(char *from, char *to)
 		memset(begin, ' ', end - begin);
 		begin = end;
 	}	
+}
+
+void titlepage(htdata *htd)
+{	// Writes the HTML title page
+	char *hfn = getcfgfile("csv2html", "master.html");
+	fdata mydat = readfile(hfn, 0, 1);
+	strdata strdat = getdatafromtagnames(mydat.from, mydat.to,
+											"cformat");
+	*strdat.to = 0;	// C string now
+	int margintop = strtol(htd->ph, NULL, 10) / 2 - 25;	// units mm
+	FILE *fpo = dofopen(htd->htfn, "w");
+	fprintf(fpo, strdat.from, htd->htfn, htd->yy, htd->author,
+				htd->email, htd->author, htd->title, margintop,
+				htd->title);
+	dofclose(fpo);
+	free(mydat.from);
+}
+
+void htmlend(const char *fn)
+{
+	writefile(fn, "</body>\n</html>\n", NULL, "a");
 }
