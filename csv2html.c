@@ -81,7 +81,7 @@ int main(int argc, char **argv)
 	titlepage(htd);
 	// tables
 	htmlend(htd->htfn);
-	//destroyhtdata(htd);
+	destroyhtdata(htd);
 	return 0;
 } // main()
 
@@ -204,11 +204,11 @@ htdata *makehtdata(const char *fn)
 	multisp2single(mydat.from, mydat.from);
 	htdata *htd = docalloc(sizeof(htdata), 1, "mkhtdata");
 	htd->author = tagstr(mydat.from, mydat.to, "author");
-	htd->divpagetop = "<div>";	// yes weird
-	htd->divpagetop_break = 
-	"<div style=\"page-break-before: always\">";
-	htd->divrecto = "<div class=\"recto\">";
-	htd->divverso = "<div class=\"verso\">";
+	htd->divpagetop = dostrdup("<div>");	// yes weird
+	htd->divpagetop_break = dostrdup(
+	"<div style=\"page-break-before: always\">");
+	htd->divrecto = dostrdup("<div class=\"recto\">");
+	htd->divverso = dostrdup("<div class=\"verso\">");
 	htd->email = tagstr(mydat.from, mydat.to, "email");
 	htd->htfn = tagstr(mydat.from, mydat.to, "htmlfn");
 	htd->pagerowslist = tagstr(mydat.from, mydat.to, "rowlist");
@@ -220,8 +220,8 @@ htdata *makehtdata(const char *fn)
 	htd->tfoot = tagstrnull(mydat.from, mydat.to, "tfoot");
 	htd->thead = tagstrnull(mydat.from, mydat.to, "thead");
 	htd->title = tagstr(mydat.from, mydat.to, "title");
-	htd->troweven = "<tr class=\"even\">";
-	htd->trowodd = "<tr class=\"odd\">";
+	htd->troweven = dostrdup("<tr class=\"even\">");
+	htd->trowodd = dostrdup("<tr class=\"odd\">");
 	htd->yy = tagstr(mydat.from, mydat.to, "year");
 	free(mydat.from);
 	return htd;
@@ -235,7 +235,6 @@ void destroyhtdata(htdata *htd)
 	if (htd->email) free(htd->email);
 	if (htd->pw) free(htd->pw);
 	if (htd->ph) free(htd->ph);
-	if (htd->title) free(htd->title);
 	if (htd->rowsperpage) free(htd->rowsperpage);
 	if (htd->pagerowslist) free(htd->pagerowslist);
 	if (htd->divpagetop_break) free(htd->divpagetop_break);
@@ -289,9 +288,10 @@ char *multisp2single(char *in, char *out)
 	while (ep > cp && *ep == ' ') ep--;
 	*ep = 0;
 	while (cp < ep && *cp == ' ') cp++;
-	// NB reason why the caller can't use same buffer for in/out,
-	// out can only be smaller than in or the same.
+	// NB there is no reason why the caller can't use same buffer for
+	// in/out, out can only be smaller than in or the same.
 	strcpy(out, cp);
+	free(buf);
 	return out;
 }
 
@@ -360,6 +360,7 @@ void titlepage(htdata *htd)
 {	// Writes the HTML title page
 	char *hfn = getcfgfile("csv2html", "master.html");
 	fdata mydat = readfile(hfn, 0, 1);
+	free(hfn);
 	strdata strdat = getdatafromtagnames(mydat.from, mydat.to,
 											"cformat");
 	*strdat.to = 0;	// C string now
