@@ -66,7 +66,6 @@ options_t process_options(int argc, char **argv)
 	opts.controlfile = 0;
 
 	int c;
-	int digit_optind = 0;
 
 	while(1) {
 		int this_option_optind = optind ? optind : 1;

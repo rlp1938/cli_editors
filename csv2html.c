@@ -24,6 +24,29 @@
 #include "gopt.h"
 #include "firstrun.h"
 
+typedef struct ts {
+	char *opn;
+	char *cls;
+} ts;
+
+typedef struct csvdata {
+	int rowsthistable;
+	int curtablerow;
+	int rowsinfile;
+	int curfilerow;
+	int tabs;
+	int pageno;
+	char *tabsx10;
+	char *dataline;
+	char *dataend;
+} csvdata;
+
+typedef struct tagstruct {
+	char *tagopn;
+	char *data;
+	char *tagcls;
+} tagstruct;
+
 typedef struct htdata {
 	char *htfn;
 	char *title;
@@ -34,16 +57,15 @@ typedef struct htdata {
 	char *ph;
 	char *rowsperpage;
 	char *pagerowslist;
-	char *divpagetop_break;
+	char *tablespec;
+	char *trowodd;
+	char *troweven;
 	char *divpagetop;
 	char *divrecto;
 	char *divverso;
-	char *thead;
-	char *trowodd;
-	char *troweven;
-	char *tfoot;
+	char *divtrecto;
+	char *divtverso;
 } htdata;
-
 
 static char *initctlfile(int optind, char **argv);
 static void sanitycheck(int optind, char **argv);
@@ -55,13 +77,45 @@ static void freelist(char **list);
 static void freevlist(char *item1, ...);
 static htdata *makehtdata(const char *fn);
 static void destroyhtdata(htdata *htd);
-static void isspace2spch(char *in);
+static void whitespace2spacechar(char *in);
 static char *tagstr(char *from, char *to, char *tagname);
-static char *tagstrnull(char *from, char *to, char *tagname);
-static char *multisp2single(char *in, char *out);
+static char *multiplespace2single(char *in, char *out);
 static void comment2space(char *from, char *to);
 static void titlepage(htdata *htd);
 static void htmlend(const char *fn);
+static void generatetables(csvdata *csvd, htdata *htd,
+							const char *csvfile);
+static int dat2cstr(char *from, char *to);
+static void writenewpage(csvdata *csvd, htdata *htd, FILE *fpo);
+static int getrows(char *list);
+static void tagout(csvdata *csvd, char *tag, FILE *fpo);
+static void writefooter(csvdata *csvd, htdata *htd, char *htags,
+						FILE *fpo);
+static void textout(csvdata *csvd, char *text, FILE *fpo);
+static void	checkhavecss(void);
+static void writetable(csvdata *csvd, htdata *htd, FILE* fpo);
+static tagstruct *maketagstruct(void);
+static void destroytagstruct(tagstruct *tstr);
+static tagstruct *gettaggroup(char *taglist, char *tagname, int fatal);
+static char *data2str(char *fr, char *to);
+static void writeheader(csvdata *csvd, htdata *htd, char *htags,
+							FILE *fpo);
+static void writebody(csvdata *csvd, htdata *htd, char *htags,
+						FILE *fpo);
+static void writerow(csvdata *csvd, htdata *htd, char *htags,
+						FILE *fpo, char *thtd);
+static void writefixedtd(csvdata *csvd, char *htags, FILE *fpo,
+							char *thtd);
+static char *insertclass(char *tag, char *class);
+static csvdata *makecsvdata(void);
+static void destroycsvdata(csvdata *csvd);
+static void writedatarow(csvdata *csvd, htdata *htd, char *htags,
+							FILE *fpo);
+static char *getnextdatarow(csvdata *csvd);
+static char **maketaglist(char *htags, char *tagname, char **closer);
+static void destroytaglist(char **taglist, char *closer);
+static char *linepart(char *line, int segment);
+static void writedatadetail(csvdata *csvd, char *htags, FILE *fpo);
 
 int main(int argc, char **argv)
 {
@@ -77,10 +131,13 @@ int main(int argc, char **argv)
 	sanitycheck(optind, argv);
 	ctlfile = argv[optind];
 	csvfile = argv[optind+1];
+	checkhavecss();
 	htdata *htd = makehtdata(ctlfile);
+	csvdata *csvd = makecsvdata();
 	titlepage(htd);
-	// tables
+	generatetables(csvd, htd, csvfile);
 	htmlend(htd->htfn);
+	destroycsvdata(csvd);
 	destroyhtdata(htd);
 	return 0;
 } // main()
@@ -129,7 +186,7 @@ void sanitycheck(int optind, char **argv)
 }
 
 void initsetup(void)
-{	// invokes firstrun() 
+{	// invokes firstrun()
 	firstrun("csv2html", "csv2html.cfg", "master.html", "master.xml",
 				"master.css", NULL);
 	fprintf(stdout, "Please edit %s/.config/csv2html/csv2html.cfg",
@@ -197,18 +254,20 @@ void freevlist(char *item1, ...)
 
 htdata *makehtdata(const char *fn)
 {
-	fdata mydat = readfile( fn, 1, 1);
-	*(mydat.to-1) = 0;	// now a C string
+	fdata mydat = readfile(fn, 1, 1);
+	*(mydat.to) = 0;	// now a C string
 	comment2space(mydat.from, mydat.to);
-	isspace2spch(mydat.from);
-	multisp2single(mydat.from, mydat.from);
+	whitespace2spacechar(mydat.from);
+	multiplespace2single(mydat.from, mydat.from);
 	htdata *htd = docalloc(sizeof(htdata), 1, "mkhtdata");
 	htd->author = tagstr(mydat.from, mydat.to, "author");
-	htd->divpagetop = dostrdup("<div>");	// yes weird
-	htd->divpagetop_break = dostrdup(
+	tagstruct *tsx = gettaggroup(mydat.from, "tabdata", 1);
+	htd->tablespec = dostrdup(tsx->data);
+	destroytagstruct(tsx);
+	htd->divpagetop = dostrdup(
 	"<div style=\"page-break-before: always\">");
-	htd->divrecto = dostrdup("<div class=\"recto\">");
-	htd->divverso = dostrdup("<div class=\"verso\">");
+	htd->divrecto = dostrdup("<div class=\"recto\"");
+	htd->divverso = dostrdup("<div class=\"verso\"");
 	htd->email = tagstr(mydat.from, mydat.to, "email");
 	htd->htfn = tagstr(mydat.from, mydat.to, "htmlfn");
 	htd->pagerowslist = tagstr(mydat.from, mydat.to, "rowlist");
@@ -217,12 +276,12 @@ htdata *makehtdata(const char *fn)
 	htd->pw = tagstr(mydat.from, mydat.to, "width");
 	htd->rowsperpage = tagstr(mydat.from, mydat.to, "rowsperpage");
 	// following 2 are allowed to be absent
-	htd->tfoot = tagstrnull(mydat.from, mydat.to, "tfoot");
-	htd->thead = tagstrnull(mydat.from, mydat.to, "thead");
 	htd->title = tagstr(mydat.from, mydat.to, "title");
-	htd->troweven = dostrdup("<tr class=\"even\">");
-	htd->trowodd = dostrdup("<tr class=\"odd\">");
+	htd->troweven = dostrdup("<tr class=\"even\"");
+	htd->trowodd = dostrdup("<tr class=\"odd\"");
 	htd->yy = tagstr(mydat.from, mydat.to, "year");
+	htd->divtrecto = dostrdup("<div class=\"trecto\">");
+	htd->divtverso = dostrdup("<div class=\"tverso\">");
 	free(mydat.from);
 	return htd;
 }
@@ -237,19 +296,18 @@ void destroyhtdata(htdata *htd)
 	if (htd->ph) free(htd->ph);
 	if (htd->rowsperpage) free(htd->rowsperpage);
 	if (htd->pagerowslist) free(htd->pagerowslist);
-	if (htd->divpagetop_break) free(htd->divpagetop_break);
 	if (htd->divpagetop) free(htd->divpagetop);
 	if (htd->divrecto) free(htd->divrecto);
 	if (htd->divverso) free(htd->divverso);
-	if (htd->thead) free(htd->thead);
 	if (htd->trowodd) free(htd->trowodd);
 	if (htd->troweven) free(htd->troweven);
-	if (htd->tfoot) free(htd->tfoot);
 	if (htd->yy) free(htd->yy);
+	if (htd->divtrecto) free(htd->divtrecto);
+	if (htd->divtverso) free(htd->divtverso);
 	free(htd);
 }
 
-void isspace2spch(char *in)
+void whitespace2spacechar(char *in)
 {	// everything isspace() becomes ' '
 	char *cp = in;
 	while (*cp) {
@@ -258,9 +316,9 @@ void isspace2spch(char *in)
 	}
 }
 
-char *multisp2single(char *in, char *out)
+char *multiplespace2single(char *in, char *out)
 {
-	char *buf = docalloc(strlen(in), 1, "multisp2single");
+	char *buf = docalloc(strlen(in), 1, "multiplespace2single");
 	char *cp = in;
 	char *bp = buf;
 	int inspace = 0;
@@ -286,6 +344,7 @@ char *multisp2single(char *in, char *out)
 	cp = buf;
 	char *ep = buf + strlen(buf) - 1;
 	while (ep > cp && *ep == ' ') ep--;
+	ep++;	// return to last space char
 	*ep = 0;
 	while (cp < ep && *cp == ' ') cp++;
 	// NB there is no reason why the caller can't use same buffer for
@@ -317,16 +376,6 @@ char *tagstr(char *from, char *to, char *tagname)
 	return buf;
 }
 
-char *tagstrnull(char *from, char *to, char *tagname)
-{	// in this case an absent tag may be a choice, not a fatal error
-	char tagfro[NAME_MAX];
-	sprintf(tagfro, "<%s>", tagname);
-	char *cp = memmem(from, to - from, tagfro, strlen(tagfro));
-	if (!cp) return NULL;
-	// else
-	return tagstr(from, to, tagname);
-}
-
 void comment2space(char *from, char *to)
 {	// comment_text_to_space() seems to be buggy - this is a rewrite
 	char *begin, *end;
@@ -353,7 +402,7 @@ void comment2space(char *from, char *to)
 		}
 		memset(begin, ' ', end - begin);
 		begin = end;
-	}	
+	}
 }
 
 void titlepage(htdata *htd)
@@ -377,3 +426,464 @@ void htmlend(const char *fn)
 {
 	writefile(fn, "</body>\n</html>\n", NULL, "a");
 }
+
+int dat2cstr(char *from, char *to)
+{
+	int rc = 0;
+	char *cp = from;
+	while (cp < to) {
+		char *eol = memchr(from, '\n', to - from);
+		rc++;
+		*eol = 0;
+		cp = eol + 1;
+	}
+	return rc;
+}
+
+int getrows(char *list)
+{	/* Avoid clobbering list */
+	static int offset = 0;
+
+	char *cp = list + offset;
+	int ret = strtol(cp, NULL, 10);
+	if (ret) {	// calculate offset to next number
+		char *guard = list + strlen(list);
+		while(!isdigit(*cp) && cp < guard) cp++;
+		while(isdigit(*cp) && cp < guard) cp++;	// past the last number
+		while(!isdigit(*cp) && cp < guard) cp++;
+	}
+	offset = cp - list;
+	return ret;
+}
+
+void tagout(csvdata *csvd, char *tag, FILE *fpo)
+{
+	int opener, closer;
+	if (strncmp(tag, "</", 2) == 0) {
+		closer = 1;
+		opener = 0;
+	} else {
+		closer = 0;
+		opener = 1;
+	}
+
+	char *buf = docalloc(strlen(tag) + 32, 1, "tagout");
+	char tablist[16];
+	strcpy(tablist, csvd->tabsx10);
+	if (opener) csvd->tabs++;
+	tablist[csvd->tabs] = 0;
+	sprintf(buf, "%s%s>\n", tablist, tag);
+	char *cp = strstr(buf, ">>");
+	if (cp) {	// deal with tags that were never open ended.
+		*cp = 0;
+		strcat(buf, ">\n");
+	}
+	fputs(buf, fpo);
+	if (closer) csvd->tabs--;
+	free(buf);
+}
+
+void textout(csvdata *csvd, char *text, FILE *fpo)
+{
+	char tablist[16];
+	strcpy(tablist, csvd->tabsx10);
+	csvd->tabs++;
+
+	tablist[csvd->tabs] = 0;
+	fprintf(fpo, "%s%s\n", tablist, text);
+	csvd->tabs--;
+}
+
+void checkhavecss(void)
+{
+	if (direxists("./css/")) {
+		mkdir("css", 775);
+	}
+	if (fileexists("./css/master.css")) {
+		char path[NAME_MAX];
+		sprintf(path, "%s/.config/csv2html/master.css", getenv("HOME"));
+		fdata mydat = readfile(path, 0, 1);
+		writefile("./css/master.css", mydat.from, mydat.to, "w");
+		free(mydat.from);
+	}
+}
+
+tagstruct *gettaggroup(char *taglist, char *tagname, int fatal)
+{	/* The generated tags here are only used for search, the actual
+	 * tags output will be those written in the searched data. This
+	 * means that any 'style=...' in such data will be preserved.
+	*/
+	size_t len = strlen(taglist);
+	char *tablespec = docalloc(len + 1, 1, "gettaggroup");
+	strcpy(tablespec, taglist);
+	char tagbuf[NAME_MAX];
+	len = strlen(tagname);
+	if (len > NAME_MAX - 4) {
+		fprintf(stderr, "Tag name too long\n%s\n", tagname);
+		exit(EXIT_FAILURE);	// should never happen
+	}
+	sprintf(tagbuf, "<%s", tagname);
+	char *cp = strstr(tablespec, tagbuf);
+	if (!cp) {
+		if (fatal) {
+			fprintf(stderr, "No tag found: %s\n", tagname);
+			exit(EXIT_FAILURE);
+		} else {
+			return (tagstruct*) NULL;
+		}
+	}
+	tagstruct *lts = maketagstruct();
+	char *te = strchr(cp, '>');
+	lts->tagopn = data2str(cp, te+1);
+	sprintf(tagbuf, "</%s>", tagname);
+	char *ct = strstr(cp, tagbuf);
+	lts->tagcls = dostrdup(tagbuf);
+	lts->data = data2str(te + 1, ct);
+	free(tablespec);
+	return lts;
+} // gettaggroup()
+
+char *data2str(char *fr, char *to)
+{
+	int len = to - fr;
+	if (len == 0) {
+		return dostrdup("");
+	}
+	char *buf = docalloc(len + 1, 1, "data2str");
+	strncpy(buf, fr, len);
+	buf[len] = 0;
+	char *cp = buf;
+	char *ep = buf + len -1;
+	while(*cp == ' ') cp++;
+	while(*ep == ' ') ep--;
+	char *ret;
+	if (cp >= ep) {	// all ' '
+		ret = dostrdup("");
+		free(buf);
+		return ret;
+	}
+	ep++;	// get back to the ' ' or where it started from.
+	*ep = 0;
+	ret = dostrdup(cp);
+	free(buf);
+	return ret;
+}
+
+tagstruct *maketagstruct(void)
+{
+	tagstruct *tstr = docalloc(sizeof(tagstruct), 1, "maketagstruct");
+	tstr->data = NULL;
+	tstr->tagopn = NULL;
+	tstr->tagcls = NULL;
+	return tstr;
+}
+
+void destroytagstruct(tagstruct *tstr)
+{
+	if(tstr->data) free(tstr->data);
+	if(tstr->tagcls) free(tstr->tagcls);
+	if(tstr->tagopn) free(tstr->tagopn);
+	free(tstr);
+}
+
+char *insertclass(char *tag, char *class)
+{
+	size_t buflen = strlen(class) + strlen(tag) + 3;
+	char *buf = docalloc(buflen, 1, "insertclass");
+	strcpy(buf, tag);
+	char *cp = strchr(buf, ' ');
+	char *tail;
+	if (cp) {
+		tail = dostrdup(cp);
+		*cp = 0;
+	} else {
+		cp = strchr(buf, '>');
+		*cp = 0;
+		tail = dostrdup(">");
+	}
+	char *classp = strchr(class, ' ');
+	if (!classp) {
+		strcat(buf, " ");
+		classp = class;
+	}
+	strcat(buf, classp);
+	strcat(buf, tail);
+	free(tail);
+	char *ret = dostrdup(buf);
+	free(buf);
+	return ret;
+} // insertclass()
+
+csvdata *makecsvdata(void)
+{
+	csvdata *csvd = docalloc(sizeof(csvdata), 1, "makecsvdata");
+	csvd->tabsx10 = "\t\t\t\t\t\t\t\t\t\t";	// read only use.
+	return csvd;
+}
+
+void destroycsvdata(csvdata *csvd)
+{
+	free(csvd);	// that's all folks.
+}
+
+char *getnextdatarow(csvdata *csvd)
+{
+	char *cp = csvd->dataline;
+	if(!cp) return cp;	// it was NULL'd last time.
+	size_t len = strlen(cp);
+	csvd->dataline += len + 1;
+	if (csvd->curfilerow > csvd->rowsinfile) {
+		cp = NULL;
+	}
+	return cp;
+} // getnextdatarow()
+
+char **maketaglist(char *htags, char *tagname, char **closer)
+{	/* The opening tags can differ in value due to maybe having
+	 * different styling but they will be closed by tags all having
+	 * the same value. eg "<td style=....>data</td>"
+	*/
+	size_t tnlen = strlen(tagname);
+	char *clstag = docalloc(tnlen + 4, 1, "maketaglist");
+	sprintf(clstag, "</%s>", tagname);
+	char srch[NAME_MAX];
+	sprintf(srch, "<%s", tagname);	// to count the openers
+	int tcount = 0;
+	char *cp = htags;
+	while ((cp = strstr(cp, srch))) {
+		tcount++;
+		cp = strstr(cp, clstag);
+	}
+	char **ret = docalloc((tcount + 1) * sizeof(char*), 1,
+							"maketaglist");
+	int i;
+	cp = htags;
+	for (i = 0; (cp = strstr(cp, srch)) ; i++) {
+		char *ep = strchr(cp, '>');
+		if(!ep) break;
+		char *buf = docalloc(ep - cp + 2, 1, "maketaglist");
+		strncpy(buf, cp, ep-cp+1);
+		ret[i] = buf;
+		cp = strstr(cp, clstag);
+	}
+	*closer = clstag;
+	return ret;
+} // maketaglist()
+
+void destroytaglist(char **taglist, char *closer)
+{
+	int i;
+	for (i = 0; taglist[i]; i++) {
+		free(taglist[i]);
+	}
+	free(closer);
+	free(taglist);
+} // destroytaglist()
+
+void generatetables(csvdata *csvd, htdata *htd, const char *csvfile)
+{
+	fdata mydat = readfile(csvfile, 0, 1);
+	csvd->rowsinfile = dat2cstr(mydat.from, mydat.to);
+	csvd->dataline = mydat.from;
+	csvd->dataend = mydat.to;
+	FILE *fpo = dofopen(htd->htfn, "a");
+	csvd->pageno = 1;	// odd pages recto, even verso.
+	/* pagination is never conditional for this job, there is simply
+	 * a series of pages on each of which is a table.
+	*/
+	csvd->curfilerow = csvd->curtablerow = csvd->tabs = 0;
+	csvd->rowsthistable = getrows(htd->pagerowslist);
+	while ((csvd->rowsthistable)) {
+		writenewpage(csvd, htd, fpo);
+		csvd->rowsthistable = getrows(htd->pagerowslist);
+	}
+	// TODO: put summary of lines written on stdout.
+	dofclose(fpo);
+	free(mydat.from);
+}
+
+void writenewpage(csvdata *csvd, htdata *htd, FILE *fpo)
+{	/* writes the divs that force the new page and brings the page
+	 * title line.
+	*/
+	tagout(csvd, htd->divpagetop, fpo);
+	char *pd = (csvd->pageno % 2 != 0) ? htd->divrecto : htd->divverso;
+	tagout(csvd, pd, fpo);
+	textout(csvd, htd->title, fpo);
+	tagout(csvd, "</div>", fpo);	// page title line
+	tagout(csvd, "</div>", fpo);	// force page break;
+	// NB different div names
+	pd = (csvd->pageno % 2 != 0) ? htd->divtrecto : htd->divtverso;
+	tagout(csvd, pd, fpo);
+	writetable(csvd, htd, fpo);
+	tagout(csvd, "</div>", fpo);
+	csvd->pageno++;
+	csvd->curtablerow = 0;
+}
+
+void writetable(csvdata *csvd, htdata *htd, FILE* fpo)
+{
+	tagstruct *tts = gettaggroup(htd->tablespec, "table", 1);
+	tagout(csvd, tts->tagopn, fpo);
+	writeheader(csvd, htd, tts->data, fpo);
+	writebody(csvd, htd, tts->data, fpo);
+	writefooter(csvd, htd, tts->data, fpo);
+	tagout(csvd, tts->tagcls, fpo);
+	destroytagstruct(tts);
+}
+
+void writebody(csvdata *csvd, htdata *htd, char *htags, FILE *fpo)
+{
+	tagstruct *wbts = gettaggroup(htags, "tbody", 1);
+	tagout(csvd, wbts->tagopn, fpo);
+	writedatarow(csvd, htd, wbts->data, fpo);
+	tagout(csvd, wbts->tagcls, fpo);
+	destroytagstruct(wbts);
+} // writebody()
+
+void writefixedtd(csvdata *csvd, char *htags, FILE *fpo, char *thtd)
+{	/* Writes the td|th lines available in the user's generated xml.
+	 * This is no use for the generated data from the csv file.
+	*/
+	char srchfr[4];	//"<td" | "<th"
+	char srchbk[6];	// "</td>" | "</th>"
+	sprintf(srchfr, "<%s", thtd);
+	sprintf(srchbk, "</%s>", thtd);
+	char *cp = strstr(htags, srchfr);
+	while (cp) {
+		tagstruct *wrft = gettaggroup(cp, thtd, 1);
+		tagout(csvd, wrft->tagopn, fpo);
+		textout(csvd, wrft->data, fpo);
+		tagout(csvd, wrft->tagcls, fpo);
+		cp = strstr(cp, srchbk);
+		if(cp) cp = strstr(cp, srchfr);
+		destroytagstruct(wrft);
+	}
+} // writefixedtd()
+
+void writeheader(csvdata *csvd, htdata *htd, char *htags, FILE *fpo)
+{
+	tagstruct *wtts = gettaggroup(htags, "thead", 0);
+	// Absence of this tag is OK.
+	if (!wtts) return;	// nothing to clean up;
+	tagout(csvd, wtts->tagopn, fpo);
+	writerow(csvd, htd, wtts->data, fpo, "th");
+	tagout(csvd, wtts->tagcls, fpo);
+	destroytagstruct(wtts);
+}
+
+void writefooter(csvdata *csvd, htdata *htd, char *htags, FILE *fpo)
+{
+	tagstruct *wttf = gettaggroup(htags, "tfoot", 0);
+	// Absence of this tag is OK.
+	if (!wttf) return;	// nothing to clean up;
+	tagout(csvd, wttf->tagopn, fpo);
+	writerow(csvd, htd, wttf->data, fpo, "td");
+	tagout(csvd, wttf->tagcls, fpo);
+	destroytagstruct(wttf);
+}
+
+void writerow(csvdata *csvd, htdata *htd, char *htags, FILE *fpo,
+					char *thtd)
+{
+	tagstruct *wrts = gettaggroup(htags, "tr", 1);
+	char *rowclass = (csvd->curtablerow %2 == 0)
+						? htd->troweven : htd->trowodd;
+	char *opntag = insertclass(wrts->tagopn, rowclass);
+	tagout(csvd, opntag, fpo);
+	free(opntag);
+	writefixedtd(csvd, wrts->data, fpo, thtd);
+	tagout(csvd, wrts->tagcls, fpo);
+	destroytagstruct(wrts);
+	csvd->curtablerow++;
+}
+
+void writedatarow(csvdata *csvd, htdata *htd, char *htags,
+							FILE *fpo)
+{	/* There is only 1 instance of <tr...> within the <tbody> group,
+	 * so I retrieve it and manipulate it just once for all rows in
+	 * each table/page.
+	*/
+	tagstruct *wdrts = gettaggroup(htags, "tr", 1);
+	char *oddtag = insertclass(wdrts->tagopn, htd->trowodd);
+	char *evntag = insertclass(wdrts->tagopn, htd->troweven);
+	while (csvd->curtablerow < csvd->rowsthistable) {
+		char *opntag = (csvd->curtablerow %2) ? oddtag : evntag;
+		tagout(csvd, opntag, fpo);
+		writedatadetail(csvd, wdrts->data, fpo);
+		tagout(csvd, wdrts->tagcls, fpo);
+		csvd->curtablerow++;
+		csvd->curfilerow++;
+	}
+	destroytagstruct(wdrts);
+} // writedatarow()
+
+void writedatadetail(csvdata *csvd, char *htags, FILE *fpo)
+{	/* A tagstruct is not useful here because I may have several <td...>
+	 * so different functions to serve up both the tags and data details
+	 * will be used instead.
+	*/
+	char *clstag;
+	char **taglist = maketaglist(htags, "td", &clstag);
+	char *line = getnextdatarow(csvd);
+	if(!line) return;
+	if(!strlen(line)) return;
+	int i = 0;
+	while (taglist[i]) {
+		tagout(csvd, taglist[i], fpo);
+		textout(csvd, linepart(line, i), fpo);
+		tagout(csvd, clstag, fpo);
+		i++;
+	}
+	destroytaglist(taglist, clstag);
+}
+
+char *linepart(char *line, int segment)
+{
+	char *buf = docalloc(strlen(line) +1, 1, "linepart");
+	strcpy(buf, line);
+	char *list[100];	// should be enough
+	int protected = 0;
+	int hasbeenprot = 0;
+	char *cp = buf;
+	int i = 0;
+	list[i] = cp;
+	i++;
+	while (*cp) {
+		switch (*cp) {
+			case '"':
+				if (protected) {
+					protected = 0;
+				} else {
+					protected = 1;
+					hasbeenprot = 1;
+				}
+				break;
+			case ',':
+				if (!protected) {
+					*cp = 0;
+					list[i] = cp + 1;
+					i++;
+				}
+
+			default:
+				break;
+		} // switch()
+		cp++;
+	} // while()
+	if (hasbeenprot) {
+	/* get rid of '"' inserted to protect embedded commas found when
+	 * converting to csv format.
+	*/
+		cp = buf;
+		char *ep = cp + strlen(line);
+		// must be able to get past embedded '\0' in buf[].
+		while (cp < ep) {
+			if (*cp == '"') *cp = ' ';	// extraneous spaces in html ok.
+			cp++;
+		}
+	}
+	char *ret = dostrdup(list[segment]);
+	free(buf);
+	return ret;
+} // linepart()

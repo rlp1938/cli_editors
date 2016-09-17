@@ -31,7 +31,7 @@
 	this is the title
 </title>
 <rowsperpage>
-	/* The value 20 is likely fine for table where the cells average 
+	/* The value 20 is likely fine for table where the cells average
 		about 2.5 lines each. Lower this if you have tall columns */
 		20
 </rowsperpage>
@@ -42,9 +42,13 @@
 	/* there must be an entry for each page in the print out. */
 </rowlist>
 <tabdata>
+	/* All opening tags within 'tabdata' may be edited to include tag
+	 * styles and such styling will be copied into the generated
+	 * html file.
+	*/
 <table>
 	/* If you don't want 'thead' you can wrap C style comments (like
-	this one) around the opening and closing tags. Like wise for the
+	this one) around the opening and closing tags. Likewise for the
 	'tfoot' below. */
 	<thead>
 		<tr>
@@ -57,7 +61,11 @@
 		</tr>
 	</tfoot>
 	<tbody>
-		// program generated data goes here.
+		<tr>
+			// This tag groups exists so that it may be styled if wanted.
+			<td>1</td><td>2</td><td>3</td>
+			// program generated data goes here.
+		</tr>
 	</tbody>
 </table>
 </tabdata>
