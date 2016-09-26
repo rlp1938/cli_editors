@@ -33,7 +33,7 @@ options_t process_options(int argc, char **argv)
   "\n"
   "\tSYNOPSIS:\n"
   "\tcsv2html -i|--init-control-file controlfile\n"
-  "\tcsv2html controlfile csvfile\n"
+  "\tcsv2html [option] controlfile csvfile\n"
   "\n"
   "\tDESCRIPTION:\n"
   "\tThe generated HTML has page break data inserted into the\n"
@@ -55,15 +55,27 @@ options_t process_options(int argc, char **argv)
   "\tThe generated file is commented to show what needs to be added.\n"
   "\tIt is an error if this file exists when selecting this option.\n"
   "\n"
+  "\t-t, --no-title-page\n"
+  "\tPrevent a title page being generated in the html.\n"
+  "\n"
+  "\t-b, --blank-page\n"
+  "\tInsert a blank html page between the title page and the html"
+  " tables.\n"
+  "\n"
+  "\tThe above two options are only meaningful when generating the html"
+  " file.\n"
+  "\n"
   ;
 
-	optstring = ":hi";
+	optstring = ":hitb";
 
 	/* declare and set defaults for local variables. */
 
 	/* set up defaults for opt vars. */
 	options_t opts;
 	opts.controlfile = 0;
+	opts.notitle = 0;
+	opts.blankpage = 0;
 
 	int c;
 
@@ -73,6 +85,8 @@ options_t process_options(int argc, char **argv)
 		static struct option long_options[] = {
 		{"help",	0,	0,	'h' },
 		{"init-control-file",	0,	0,	'i' },
+		{"no-page-title",	0,	0,	't' },
+		{"blank-page",	0,	0,	'b' },
 		{0,	0,	0,	0 }
 			};
 
@@ -93,6 +107,12 @@ options_t process_options(int argc, char **argv)
 		break;
 		case 'i':
 			opts.controlfile = 1;
+		break;
+		case 't':
+			opts.notitle = 1;
+		break;
+		case 'b':
+			opts.blankpage = 1;
 		break;
 
 		case ':':

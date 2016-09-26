@@ -36,6 +36,7 @@ typedef struct csvdata {
 	int curfilerow;
 	int tabs;
 	int pageno;
+	int isdone;
 	char *tabsx10;
 	char *dataline;
 	char *dataend;
@@ -116,6 +117,7 @@ static char **maketaglist(char *htags, char *tagname, char **closer);
 static void destroytaglist(char **taglist, char *closer);
 static char *linepart(char *line, int segment);
 static void writedatadetail(csvdata *csvd, char *htags, FILE *fpo);
+static void makeblank(htdata *htd);
 
 int main(int argc, char **argv)
 {
@@ -134,7 +136,17 @@ int main(int argc, char **argv)
 	checkhavecss();
 	htdata *htd = makehtdata(ctlfile);
 	csvdata *csvd = makecsvdata();
-	titlepage(htd);
+	if (!opts.notitle) {
+		titlepage(htd);
+	} else {
+		FILE *fpo = dofopen(htd->htfn, "w");
+		dofclose(fpo);	// every other file write is in append mode.
+	}
+
+	if (opts.blankpage) {
+		makeblank(htd);
+	}
+
 	generatetables(csvd, htd, csvfile);
 	htmlend(htd->htfn);
 	destroycsvdata(csvd);
@@ -488,7 +500,6 @@ void textout(csvdata *csvd, char *text, FILE *fpo)
 	char tablist[16];
 	strcpy(tablist, csvd->tabsx10);
 	csvd->tabs++;
-
 	tablist[csvd->tabs] = 0;
 	fprintf(fpo, "%s%s\n", tablist, text);
 	csvd->tabs--;
@@ -617,7 +628,8 @@ char *insertclass(char *tag, char *class)
 csvdata *makecsvdata(void)
 {
 	csvdata *csvd = docalloc(sizeof(csvdata), 1, "makecsvdata");
-	csvd->tabsx10 = "\t\t\t\t\t\t\t\t\t\t";	// read only use.
+	csvd->tabsx10 = "\t\t\t\t\t\t\t\t\t\t";	// is read only.
+	csvd->isdone = 0;
 	return csvd;
 }
 
@@ -628,6 +640,7 @@ void destroycsvdata(csvdata *csvd)
 
 char *getnextdatarow(csvdata *csvd)
 {
+	if(csvd->isdone) return NULL;
 	char *cp = csvd->dataline;
 	if(!cp) return cp;	// it was NULL'd last time.
 	size_t len = strlen(cp);
@@ -706,6 +719,7 @@ void writenewpage(csvdata *csvd, htdata *htd, FILE *fpo)
 {	/* writes the divs that force the new page and brings the page
 	 * title line.
 	*/
+	if(csvd->isdone) return;
 	tagout(csvd, htd->divpagetop, fpo);
 	char *pd = (csvd->pageno % 2 != 0) ? htd->divrecto : htd->divverso;
 	tagout(csvd, pd, fpo);
@@ -723,6 +737,7 @@ void writenewpage(csvdata *csvd, htdata *htd, FILE *fpo)
 
 void writetable(csvdata *csvd, htdata *htd, FILE* fpo)
 {
+	if(csvd->isdone) return;
 	tagstruct *tts = gettaggroup(htd->tablespec, "table", 1);
 	tagout(csvd, tts->tagopn, fpo);
 	writeheader(csvd, htd, tts->data, fpo);
@@ -734,6 +749,7 @@ void writetable(csvdata *csvd, htdata *htd, FILE* fpo)
 
 void writebody(csvdata *csvd, htdata *htd, char *htags, FILE *fpo)
 {
+	if(csvd->isdone) return;
 	tagstruct *wbts = gettaggroup(htags, "tbody", 1);
 	tagout(csvd, wbts->tagopn, fpo);
 	writedatarow(csvd, htd, wbts->data, fpo);
@@ -763,6 +779,7 @@ void writefixedtd(csvdata *csvd, char *htags, FILE *fpo, char *thtd)
 
 void writeheader(csvdata *csvd, htdata *htd, char *htags, FILE *fpo)
 {
+	if(csvd->isdone) return;
 	tagstruct *wtts = gettaggroup(htags, "thead", 0);
 	// Absence of this tag is OK.
 	if (!wtts) return;	// nothing to clean up;
@@ -786,6 +803,7 @@ void writefooter(csvdata *csvd, htdata *htd, char *htags, FILE *fpo)
 void writerow(csvdata *csvd, htdata *htd, char *htags, FILE *fpo,
 					char *thtd)
 {
+	if(csvd->isdone) return;
 	tagstruct *wrts = gettaggroup(htags, "tr", 1);
 	char *rowclass = (csvd->curtablerow %2 == 0)
 						? htd->troweven : htd->trowodd;
@@ -804,6 +822,7 @@ void writedatarow(csvdata *csvd, htdata *htd, char *htags,
 	 * so I retrieve it and manipulate it just once for all rows in
 	 * each table/page.
 	*/
+	if(csvd->isdone) return;
 	tagstruct *wdrts = gettaggroup(htags, "tr", 1);
 	char *oddtag = insertclass(wdrts->tagopn, htd->trowodd);
 	char *evntag = insertclass(wdrts->tagopn, htd->troweven);
@@ -812,6 +831,7 @@ void writedatarow(csvdata *csvd, htdata *htd, char *htags,
 		tagout(csvd, opntag, fpo);
 		writedatadetail(csvd, wdrts->data, fpo);
 		tagout(csvd, wdrts->tagcls, fpo);
+		if(csvd->isdone) break;	// has written empty <tr></tr>
 		csvd->curtablerow++;
 		csvd->curfilerow++;
 	}
@@ -823,11 +843,14 @@ void writedatadetail(csvdata *csvd, char *htags, FILE *fpo)
 	 * so different functions to serve up both the tags and data details
 	 * will be used instead.
 	*/
+	if(csvd->isdone) return;
 	char *clstag;
 	char **taglist = maketaglist(htags, "td", &clstag);
 	char *line = getnextdatarow(csvd);
-	if(!line) return;
-	if(!strlen(line)) return;
+	if (!line || !strlen(line)) {
+		csvd->isdone = 1;
+		return;
+	}
 	int i = 0;
 	while (taglist[i]) {
 		tagout(csvd, taglist[i], fpo);
@@ -887,3 +910,10 @@ char *linepart(char *line, int segment)
 	free(buf);
 	return ret;
 } // linepart()
+
+void makeblank(htdata *htd)
+{	/* make a blank page actionable by wkhtmltopdf */
+	char *text =
+	"<div style=\"page-break-before: always\">\n<p>&nbsp;</p></div>\n";
+	writefile(htd->htfn, text, NULL, "a");
+}

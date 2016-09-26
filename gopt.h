@@ -27,6 +27,8 @@ char* synopsis;
 
 typedef struct options_t {
 int controlfile;
+int notitle;
+int blankpage;
 } options_t;
 
 void dohelp(int forced);
