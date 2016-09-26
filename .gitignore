@@ -9,6 +9,9 @@
 /csv2html
 /csv2html.plist/
 /csv2html.t2t
+/cathtml
+/cathtml.plist/
+/cathtml.t2t
 /Makefile
 /stamp-h1
 /test*
@@ -17,3 +20,7 @@
 /makefile.opt
 /Testbuild
 /nooptim.sh
+/td1
+/td2
+/td3
+/cnooptim.sh
