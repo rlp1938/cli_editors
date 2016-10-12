@@ -39,6 +39,7 @@ char *helptext =
   ;
 static void dohelp(int forced);
 static void die(const char *msg);
+static fdata outbuf(char **argv);
 
 int main(int argc, char **argv)
 {
@@ -49,13 +50,34 @@ int main(int argc, char **argv)
 		(strcmp("--help", argv[1]) == 0)){
 		dohelp(EXIT_SUCCESS);
 	}
+	fdata outdat = outbuf(argv); // buffer to hold input files content.
 	int av = 1;	// index to argv
 	fdata mydat = readfile(argv[av], 0, 1);
+	av++;
 	char *eob1 = memmem(mydat.from, mydat.to - mydat.from, "</body>",
 						strlen("</body>"));
 	if(!eob1) die("Badly formed html file.\n");
-	writefile("-", mydat.from, eob1, "w");
+	char *copyto = outdat.from;
+	size_t sz = eob1 - mydat.from;
+	// copies data from top of file to "</body>".
+	memcpy(copyto, mydat.from, sz);
+	copyto += sz;
 	free(mydat.from);
+	while (argv[av]) {
+		fdata mydat = readfile(argv[av], 0, 1);
+		// copies data from inside <body> ... </body> tags
+		strdata strdat = getdatafromtagnames(mydat.from, mydat.to,
+												"body");
+		sz = strdat.to - strdat.from;
+		memcpy(copyto, strdat.from, sz);
+		copyto += sz;
+		free(mydat.from);
+		av++;
+	}
+	memcpy(copyto, "</body>\n", 8);
+	copyto += 8;
+	writefile("-", outdat.from, copyto, "w");
+	free(outdat.from);
 	return 0;
 }
 
@@ -69,3 +91,23 @@ void die(const char *msg)
 	fputs(msg, stderr);
 	exit(EXIT_FAILURE);
 }
+
+fdata outbuf(char **argv)
+{	/* Calculate total file size for succession of files named in
+	 * argv[].
+	*/
+	size_t tot = 0;
+	int av = 1;
+	while (argv[av]) {
+		// yes this is utterly gross but easy for me.
+		fdata mydat = readfile(argv[av], 0, 1);
+		tot += mydat.to - mydat.from;
+		free(mydat.from);
+		// no matter I will read these files again anyway.
+		av++;
+	}
+	fdata out;
+	out.from = docalloc(tot, 1, "outbuf");
+	out.to = out.from + tot;
+	return out;
+} // outbuf()
