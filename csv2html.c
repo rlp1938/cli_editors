@@ -82,7 +82,7 @@ static void whitespace2spacechar(char *in);
 static char *tagstr(char *from, char *to, char *tagname);
 static char *multiplespace2single(char *in, char *out);
 static void comment2space(char *from, char *to);
-static void titlepage(htdata *htd);
+static void titlepage(htdata *htd, int stoptp);
 static void htmlend(const char *fn);
 static void generatetables(csvdata *csvd, htdata *htd,
 							const char *csvfile);
@@ -136,17 +136,10 @@ int main(int argc, char **argv)
 	checkhavecss();
 	htdata *htd = makehtdata(ctlfile);
 	csvdata *csvd = makecsvdata();
-	if (!opts.notitle) {
-		titlepage(htd);
-	} else {
-		FILE *fpo = dofopen(htd->htfn, "w");
-		dofclose(fpo);	// every other file write is in append mode.
-	}
-
+	titlepage(htd, opts.notitle);
 	if (opts.blankpage) {
 		makeblank(htd);
 	}
-
 	generatetables(csvd, htd, csvfile);
 	htmlend(htd->htfn);
 	destroycsvdata(csvd);
@@ -300,6 +293,7 @@ htdata *makehtdata(const char *fn)
 
 void destroyhtdata(htdata *htd)
 {	// can't use freevlist 'cos it will quit at first NULL element found
+	if (htd->tablespec) free(htd->tablespec);
 	if (htd->htfn) free(htd->htfn);
 	if (htd->title) free(htd->title);
 	if (htd->author) free(htd->author);
@@ -417,7 +411,7 @@ void comment2space(char *from, char *to)
 	}
 }
 
-void titlepage(htdata *htd)
+void titlepage(htdata *htd, int stoptp)
 {	// Writes the HTML title page
 	char *hfn = getcfgfile("csv2html", "master.html");
 	fdata mydat = readfile(hfn, 0, 1);
@@ -428,8 +422,13 @@ void titlepage(htdata *htd)
 	int margintop = strtol(htd->ph, NULL, 10) / 2 - 25;	// units mm
 	FILE *fpo = dofopen(htd->htfn, "w");
 	fprintf(fpo, strdat.from, htd->htfn, htd->yy, htd->author,
-				htd->email, htd->author, htd->title, margintop,
-				htd->title);
+				htd->email, htd->author, htd->title, margintop);
+	if (!stoptp) {
+		fprintf(fpo,
+		"\t<h1 style=\"margin-top %dmm; text-align: center\">%s</h1>\n",
+		margintop, htd->title);
+	}
+
 	dofclose(fpo);
 	free(mydat.from);
 }
@@ -540,6 +539,7 @@ tagstruct *gettaggroup(char *taglist, char *tagname, int fatal)
 			fprintf(stderr, "No tag found: %s\n", tagname);
 			exit(EXIT_FAILURE);
 		} else {
+			free(tablespec);
 			return (tagstruct*) NULL;
 		}
 	}
@@ -835,6 +835,8 @@ void writedatarow(csvdata *csvd, htdata *htd, char *htags,
 		csvd->curtablerow++;
 		csvd->curfilerow++;
 	}
+	free(evntag);
+	free(oddtag);
 	destroytagstruct(wdrts);
 } // writedatarow()
 
@@ -854,7 +856,9 @@ void writedatadetail(csvdata *csvd, char *htags, FILE *fpo)
 	int i = 0;
 	while (taglist[i]) {
 		tagout(csvd, taglist[i], fpo);
-		textout(csvd, linepart(line, i), fpo);
+		char *text = linepart(line, i);
+		textout(csvd, text, fpo);
+		free(text);
 		tagout(csvd, clstag, fpo);
 		i++;
 	}
