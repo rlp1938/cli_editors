@@ -19,8 +19,8 @@
  *  MA 02110-1301, USA.
 */
 
-#include "fileops.h"
-#include "stringops.h"
+#include "../Utils/fileops.h"
+#include "../Utils/stringops.h"
 #include "gopt.h"
 
 

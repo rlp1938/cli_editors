@@ -19,10 +19,10 @@
  *  MA 02110-1301, USA.
 */
 
-#include "fileops.h"
-#include "stringops.h"
+#include "../Utils/fileops.h"
+#include "../Utils/stringops.h"
+#include "../Utils/firstrun.h"
 #include "gopt.h"
-#include "firstrun.h"
 
 typedef struct ts {
 	char *opn;
@@ -160,9 +160,9 @@ char *initctlfile(int optind, char **argv)
 	int pw = strtol(pws, NULL, 10);
 	char *phs = getcfgvalue("pageheight", cfglines);
 	int ph = strtol(phs , NULL, 10);
-	char *masterxml = getcfgfile("csv2html", "master.xml");
-	fdata mydat = readfile(masterxml, 0, 1);
-	free(masterxml);
+	char *c2hmasterxml = getcfgfile("htmledit", "c2hmaster.xml");
+	fdata mydat = readfile(c2hmasterxml, 0, 1);
+	free(c2hmasterxml);
 	strdata strdat = getdatafromtagnames(mydat.from, mydat.to,
 											"cformat");
 	*strdat.to = 0;	// now it is a C string
@@ -192,9 +192,9 @@ void sanitycheck(int optind, char **argv)
 
 void initsetup(void)
 {	// invokes firstrun()
-	firstrun("csv2html", "csv2html.cfg", "master.html", "master.xml",
-				"master.css", NULL);
-	fprintf(stdout, "Please edit %s/.config/csv2html/csv2html.cfg",
+	firstrun("htmledit", "csv2html.cfg", "c2hmaster.html", "c2hmaster.xml",
+				"c2hmaster.css", NULL);
+	fprintf(stdout, "Please edit %s/.config/htmledit/csv2html.cfg",
 					getenv("HOME"));
 } // initsetup()
 
@@ -413,7 +413,7 @@ void comment2space(char *from, char *to)
 
 void titlepage(htdata *htd, int stoptp)
 {	// Writes the HTML title page
-	char *hfn = getcfgfile("csv2html", "master.html");
+	char *hfn = getcfgfile("htmledit", "c2hmaster.html");
 	fdata mydat = readfile(hfn, 0, 1);
 	free(hfn);
 	strdata strdat = getdatafromtagnames(mydat.from, mydat.to,
@@ -509,11 +509,11 @@ void checkhavecss(void)
 	if (direxists("./css/")) {
 		mkdir("css", 775);
 	}
-	if (fileexists("./css/master.css")) {
+	if (fileexists("./css/c2hmaster.css")) {
 		char path[NAME_MAX];
-		sprintf(path, "%s/.config/csv2html/master.css", getenv("HOME"));
+		sprintf(path, "%s/.config/htmledit/c2hmaster.css", getenv("HOME"));
 		fdata mydat = readfile(path, 0, 1);
-		writefile("./css/master.css", mydat.from, mydat.to, "w");
+		writefile("./css/c2hmaster.css", mydat.from, mydat.to, "w");
 		free(mydat.from);
 	}
 }

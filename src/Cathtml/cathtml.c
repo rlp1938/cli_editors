@@ -21,8 +21,8 @@
 
 
 #include <stdio.h>
-#include "fileops.h"
-#include "stringops.h"
+#include "src/Utils/fileops.h"
+#include "src/Utils/stringops.h"
 
 char *helptext =
   "\tcathtml concatenates a number of html files into one.\n"
