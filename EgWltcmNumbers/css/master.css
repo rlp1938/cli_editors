@@ -1,0 +1,46 @@
+/* master.css */
+.odd {
+	background-color: #e0e0e0;
+}
+.even {
+	background-color: #ffffff;
+}
+
+table th td {
+	border: none;
+}
+
+td {
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+
+th {
+	font-weight: bold;
+}
+
+.recto {
+	margin-left: 15mm;
+	margin-right: 0;
+	text-align: right;
+}
+
+.verso {
+	margin-left: 0;
+	margin-right: 15mm;
+	text-align: left;
+}
+
+.trecto {
+	margin-left: 15mm;
+	margin-right: 0;
+}
+
+.tverso {
+	margin-left: 0;
+	margin-right: 15mm;
+}
+
+

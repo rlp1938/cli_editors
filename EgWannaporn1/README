@@ -1,0 +1,15 @@
+README - for wannaporns-65-thai-phrases.pdf
+
+1. Start with the PDF named above.
+pdftotext wannaporns-65-thai-phrases.pdf wannaporns-65-thai-phrases.bak
+
+The shell scripts text2html.sh and addsound.sh have the files to operate
+on named internally.
+
+./text2html.sh generates wannaporns-65-thai-phrases.html
+
+./addsound.sh operates on a backup copy of the above html file and adds
+the sound controls to it.
+
+Read the comments in the shell scripts to understand the use of hexsed
+to edit the source files.

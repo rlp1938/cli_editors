@@ -1,0 +1,67 @@
+
+	<htmlfn>	// the html filename, accept default or change it.
+	vocab.html
+	</htmlfn>
+	<copywrite>
+		<year>2016</year>
+		<author>Robert L (Bob) Parker</author>
+		<email>rlp1938@gmail.com</email>
+	</copywrite>
+	<pagesize>
+		<width>210mm</width>
+		<height>297mm</height>
+	</pagesize>
+
+<printmargins>
+	/* These are the page setup margins you will use when printing
+	the generated html. Change the numbers as required.
+	*/
+	<unit>mm</unit>	// do not change the unit!
+	<top>10</top>
+	<bottom>10</bottom>
+	<left>10</left>
+	<right>10</right>
+</printmargins>
+<title>	// change this text, it's both 'title' and front page header
+We Learn Thai Chiang Mai - Vocabulary Levels 1-3</title>
+<rowsperpage>
+	/* The value 25 is likely fine for table where the cells average
+		about 2.5 lines each. Lower this if you have tall columns */
+		35
+</rowsperpage>
+<rowlist>
+	/* list of rows per page, these values are set by experiment
+	T1 T2 T3 T4 T6 T7 T8 T9 T0 T1 T2 T3 T4 T5 T6 T7 T8 T9 T0 T1*/
+	38 39 40 38 41 36 41 41 38 38 30 35 31 26 26 26 35 39 36 39
+	/*	T2 T3 T4 T5 T6 T7 T8 T9 T0 T1 T2 T3 T4 T5 T6 T7 */
+		35 40 40 40 38 38 41 38 26 38 39 41	35 32 38 21
+	/* there must be an entry for each page in the print out (finally)*/
+</rowlist>
+<tabdata>
+	/* All opening tags within 'tabdata' may be edited to include tag
+	 * styles and such styling will be copied into the generated
+	 * html file.
+	*/
+<table>
+	/* If you don't want 'thead' you can wrap C style comments (like
+	this one) around the opening and closing tags. Likewise for the
+	'tfoot' below. */
+	<thead>
+		<tr>
+			<th>English</th><th>Transliterated</th><th>Thai Script</th>
+		</tr>
+	</thead>
+	/*<tfoot>
+		<tr>
+			<td>Ftr 1</td><td>Ftr 2</td><td>Ftr 3</td><td>
+		</tr>
+	</tfoot>*/
+	<tbody>
+		<tr>
+			// This tag groups exists so that it may be styled if wanted.
+			<td>1</td><td>2</td><td>3</td>
+			// program generated data goes here.
+		</tr>
+	</tbody>
+</table>
+</tabdata>

@@ -1,31 +1,52 @@
 /*  firstrun.c
  *
- *	Copyright 2015 Bob Parker <rlp1938@gmail.com>
+ * Copyright 2015 Bob Parker <rlp1938@gmail.com>
  *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- *	MA 02110-1301, USA.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
 */
 
 #include "firstrun.h"
 
-int checkfirstrun(char *progname)
+int checkfirstrun(char *progname, ...)
 {
+	va_list ap;
 	// construct the user's path to .config
 	char upath[PATH_MAX];
 	sprintf(upath, "%s/.config/%s/", getenv("HOME"), progname);
-	return direxists(upath);
+	if (direxists(upath)) return -1;
+	/* if the dir does not exist return failure, but if it does then
+	 * check that all files are in place and return failure if there
+	 * are any missing.
+	 * NB This will break every program using the earlier version.
+	*/
+	size_t len = strlen(upath);
+	if (upath[len-1] != '/') {
+		upath[len-1] = '/';
+		len++;
+	}
+	va_start(ap, progname);
+	char *cp;
+	while (1) {
+		cp = va_arg(ap, char *);
+		if(!cp) break;	// last va must be NULL
+		strcpy(upath + len, cp);
+		if(fileexists(upath)) return -1;
+	}
+	va_end(ap);
+	return 0;
 } // checkfirstrun()
 
 void firstrun(char *progname, ...)

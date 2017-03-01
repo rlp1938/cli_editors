@@ -35,7 +35,6 @@
 #include <linux/limits.h>
 #include <libgen.h>
 #include <errno.h>
-#include <utime.h>
 
 #define _GNU_SOURCE 1
 
@@ -60,22 +59,21 @@ int direxists(const char *path);
 int doopen(const char *fn, const char *mode);
 void doclose(int fd);
 int is_in_list(const char *what, const char **list);
-
 void doread(int fd, size_t bcount, char *result);
 void dowrite(int fd, char *writebuf);
 int dostat(const char *fn, struct stat *sb, int fatal);
 void do_mkdir(const char *head_dir, const char *newdir);
 fdata dorealloc(fdata indata, int change);
 void *docalloc(size_t nmemb, size_t size, const char *func);
-
+char *getconfigpath(const char *pname);
 fdata readtextfile(const char *filename, off_t extra, int fatal);
 fdata readfile(const char *filename, off_t extra, int fatal);
 fdata readpseudofile(const char *path, off_t extra);
-void writefile(const char *to_write, char *from, char *to,
+void writefile(const char *file2write, char *from, char *to,
 				const char *mode);
 size_t count_file_bytes(const char *path);
-
 fdata mem2str(char *pfrom, char *pto);
+fdata mem2str_n(char *pfrom, char *pto, int *nr);
 int getans(const char *prompt, const char *choices);
 int isrunning(char **proglist);
 char *gettmpfn(void);
@@ -85,10 +83,14 @@ void comment_text_to_space(char *from, const char *to);
 int count_cfg_data_lines(char *from, char *to);
 void set_cfg_lines(char **lines, int numlines, char *from, char *to);
 int get_number_from_sysfile(const char *path);
-void copyfile(const char *filefro, const char *fileto);
+char *getconfigfile(const char *path, const char *fname);
+int getdeviceid(const char *path);
+char **makeworkfilenames(const char *dir, const char *progname,
+							int nritems);
+void freestringslist(char **list);
+char *getuser(void);
 void copyfilebychunk(const size_t chunk, const char *filefro,
 						const char *fileto);
-void copyfileattributes(const char *src, const char *dst);
 void error2file(const char *efile, const char *text, int num);
 
 #endif

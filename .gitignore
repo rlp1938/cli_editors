@@ -20,10 +20,7 @@
 /makefile.opt
 /Testbuild
 /nooptim.sh
-/td1
-/td2
-/td3
-/td4
-/td5
+/td*/
 /cnooptim.sh
 /zMakefile.am
+inithtconvert.sh

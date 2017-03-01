@@ -19,6 +19,7 @@
 */
 
 #include "fileops.h"
+#include "stringops.h"
 
 fdata readtextfile(const char *filename, off_t extra, int fatal)
 {	// checks that file terminates with '\n' and if not appends it.
@@ -566,3 +567,18 @@ void error2file(const char *efile, const char *text, int num)
 	fprintf(fpo, "%s , %s , %s\n", efile, text, strerror(errsv));
 	dofclose(fpo);
 } // error2file()
+
+char *getconfigpath(const char *pname)
+{
+	char path[PATH_MAX];
+	char *home = getenv("HOME");
+	sprintf(path, "%s/.config/%s", home, pname);
+	return dostrdup(path);
+} // getconfigpath()
+
+char *getconfigfile(const char *path, const char *fname)
+{
+	char outpath[PATH_MAX];
+	sprintf(outpath, "%s/%s", path, fname);
+	return dostrdup(outpath);
+} // getconfigfile()

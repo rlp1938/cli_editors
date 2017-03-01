@@ -54,7 +54,8 @@ src/Utils/fileops.o: src/Utils/fileops.c /usr/include/stdc-predef.h \
  /usr/include/errno.h /usr/include/x86_64-linux-gnu/bits/errno.h \
  /usr/include/linux/errno.h /usr/include/x86_64-linux-gnu/asm/errno.h \
  /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
- /usr/include/utime.h
+ src/Utils/stringops.h /usr/include/utime.h \
+ /usr/include/x86_64-linux-gnu/bits/timex.h
 
 /usr/include/stdc-predef.h:
 
@@ -206,4 +207,8 @@ src/Utils/fileops.h:
 
 /usr/include/asm-generic/errno-base.h:
 
+src/Utils/stringops.h:
+
 /usr/include/utime.h:
+
+/usr/include/x86_64-linux-gnu/bits/timex.h:
