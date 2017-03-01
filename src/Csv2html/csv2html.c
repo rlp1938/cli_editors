@@ -122,7 +122,7 @@ static void makeblank(htdata *htd);
 int main(int argc, char **argv)
 {
 	options_t opts = process_options(argc, argv);
-	if (checkfirstrun("csv2html")) initsetup();
+	if (checkfirstrun("htmledit")) initsetup();
 	char *ctlfile = NULL;
 	char *csvfile = NULL;
 	if (opts.controlfile) {
