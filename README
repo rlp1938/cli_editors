@@ -1,4 +1,4 @@
-README for Htmledit
+README for CliEditors
 This project is a collection of html editing programs. Generally the
 programs are intended to edit html so as to make the files work better
 with the program wkhtmltopdf. Static built binaries of wkhtmltopdf are
@@ -12,15 +12,13 @@ file of tables as needed to display the csv data. With manual assistance
 it takes care of page breaks so that the html is in a form suitable for
 wkhtmltopdf to make a PDF suitable for printing. By default it produces
 gutter margins suitable for two sided printing.
+
 2. cathtml - takes a command line list html files and concatenates them
 into one file, output to stdout. The first html file named provides all
 of the data up to the <body> tag. You can redirect the output to a named
 output file of course.
 
-FUTURE
-3. mktable - a program to model a html table with colspan and/or
-rowspans in user input combinations.
-4. htedit - a batch editor for html files to make them page break tables
-correctly when converted to PDF with wkhtmltopdf. Arbitrary text
-addition, change and deletion as well as addition and deletion of css
-page break styles in other html text is possible.
+3. hexsed - a stream editor that uses data in hex format for the string
+to delete or strings to find and replace.
+
+See the individual README files in src/* where they exist.

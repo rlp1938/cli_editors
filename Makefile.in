@@ -89,7 +89,7 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = csv2html$(EXEEXT) cathtml$(EXEEXT)
+bin_PROGRAMS = csv2html$(EXEEXT) cathtml$(EXEEXT) hexsed$(EXEEXT)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -117,6 +117,11 @@ am_csv2html_OBJECTS = src/Utils/fileops.$(OBJEXT) \
 	src/Csv2html/csv2html.$(OBJEXT) src/Csv2html/gopt.$(OBJEXT)
 csv2html_OBJECTS = $(am_csv2html_OBJECTS)
 csv2html_LDADD = $(LDADD)
+am_hexsed_OBJECTS = src/Hexsed/hexsed.$(OBJEXT) \
+	src/Hexsed/gopt.$(OBJEXT) src/Utils/fileops.$(OBJEXT) \
+	src/Utils/stringops.$(OBJEXT)
+hexsed_OBJECTS = $(am_hexsed_OBJECTS)
+hexsed_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -145,8 +150,9 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(cathtml_SOURCES) $(csv2html_SOURCES)
-DIST_SOURCES = $(cathtml_SOURCES) $(csv2html_SOURCES)
+SOURCES = $(cathtml_SOURCES) $(csv2html_SOURCES) $(hexsed_SOURCES)
+DIST_SOURCES = $(cathtml_SOURCES) $(csv2html_SOURCES) \
+	$(hexsed_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -334,13 +340,23 @@ cathtml_SOURCES = \
 	src/Utils/stringops.h \
 	src/Cathtml/cathtml.c
 
+hexsed_SOURCES = \
+	src/Hexsed/hexsed.c \
+	src/Hexsed/gopt.c \
+	src/Hexsed/gopt.h \
+	src/Utils/fileops.c \
+	src/Utils/fileops.h	\
+	src/Utils/stringops.c \
+	src/Utils/stringops.h
+
 man_MANS = \
 	src/Csv2html/csv2html.1 \
-	src/Cathtml/cathtml.1
+	src/Cathtml/cathtml.1 \
+	src/Hexsed/hexsed.1
 
 
 # deal with config files
-prgdir = $(datadir)/htmledit
+prgdir = $(datadir)/cli_edit
 prg_DATA = \
 	src/Csv2html/csv2html.1 \
 	src/Csv2html/csv2html.cfg \
@@ -348,7 +364,8 @@ prg_DATA = \
 	src/Csv2html/c2hmaster.xml \
 	src/Csv2html/c2hmaster.html \
 	src/Cathtml/cathtml.1 \
-	src/Cathtml/config
+	src/Cathtml/config \
+	src/Hexsed/hexsed.1
 
 EXTRA_DIST = \
 	src/Csv2html/csv2html.1 \
@@ -357,7 +374,8 @@ EXTRA_DIST = \
 	src/Csv2html/c2hmaster.xml \
 	src/Csv2html/c2hmaster.html \
 	src/Cathtml/cathtml.1 \
-	src/Cathtml/config
+	src/Cathtml/config \
+	src/Hexsed/hexsed.1
 
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
@@ -492,11 +510,26 @@ src/Csv2html/gopt.$(OBJEXT): src/Csv2html/$(am__dirstamp) \
 csv2html$(EXEEXT): $(csv2html_OBJECTS) $(csv2html_DEPENDENCIES) $(EXTRA_csv2html_DEPENDENCIES) 
 	@rm -f csv2html$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(csv2html_OBJECTS) $(csv2html_LDADD) $(LIBS)
+src/Hexsed/$(am__dirstamp):
+	@$(MKDIR_P) src/Hexsed
+	@: > src/Hexsed/$(am__dirstamp)
+src/Hexsed/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) src/Hexsed/$(DEPDIR)
+	@: > src/Hexsed/$(DEPDIR)/$(am__dirstamp)
+src/Hexsed/hexsed.$(OBJEXT): src/Hexsed/$(am__dirstamp) \
+	src/Hexsed/$(DEPDIR)/$(am__dirstamp)
+src/Hexsed/gopt.$(OBJEXT): src/Hexsed/$(am__dirstamp) \
+	src/Hexsed/$(DEPDIR)/$(am__dirstamp)
+
+hexsed$(EXEEXT): $(hexsed_OBJECTS) $(hexsed_DEPENDENCIES) $(EXTRA_hexsed_DEPENDENCIES) 
+	@rm -f hexsed$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(hexsed_OBJECTS) $(hexsed_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 	-rm -f src/Cathtml/*.$(OBJEXT)
 	-rm -f src/Csv2html/*.$(OBJEXT)
+	-rm -f src/Hexsed/*.$(OBJEXT)
 	-rm -f src/Utils/*.$(OBJEXT)
 
 distclean-compile:
@@ -505,6 +538,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/Cathtml/$(DEPDIR)/cathtml.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/Csv2html/$(DEPDIR)/csv2html.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/Csv2html/$(DEPDIR)/gopt.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/Hexsed/$(DEPDIR)/gopt.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/Hexsed/$(DEPDIR)/hexsed.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/Utils/$(DEPDIR)/fileops.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/Utils/$(DEPDIR)/firstrun.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/Utils/$(DEPDIR)/stringops.Po@am__quote@
@@ -848,6 +883,8 @@ distclean-generic:
 	-rm -f src/Cathtml/$(am__dirstamp)
 	-rm -f src/Csv2html/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/Csv2html/$(am__dirstamp)
+	-rm -f src/Hexsed/$(DEPDIR)/$(am__dirstamp)
+	-rm -f src/Hexsed/$(am__dirstamp)
 	-rm -f src/Utils/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/Utils/$(am__dirstamp)
 
@@ -860,7 +897,7 @@ clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-	-rm -rf src/Cathtml/$(DEPDIR) src/Csv2html/$(DEPDIR) src/Utils/$(DEPDIR)
+	-rm -rf src/Cathtml/$(DEPDIR) src/Csv2html/$(DEPDIR) src/Hexsed/$(DEPDIR) src/Utils/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-hdr distclean-tags
@@ -908,7 +945,7 @@ installcheck-am:
 maintainer-clean: maintainer-clean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-	-rm -rf src/Cathtml/$(DEPDIR) src/Csv2html/$(DEPDIR) src/Utils/$(DEPDIR)
+	-rm -rf src/Cathtml/$(DEPDIR) src/Csv2html/$(DEPDIR) src/Hexsed/$(DEPDIR) src/Utils/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

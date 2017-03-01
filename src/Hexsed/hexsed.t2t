@@ -1,0 +1,66 @@
+hexsed
+Linux User's Manual
+%%mtime(%Y-%m-%d)
+
+= NAME =
+**hexsed** - a stream editor that uses parameters supplied in hex.
+
+= SYNOPSIS =
+**hexsed** [-n] [=count]/find/d filename
+
+**hexsed** [-n] [=count]/find/insert/op filename
+
+where op is one of: i, insert before find string; a, append to find
+string; and r, replace the find string.
+
+
+Where both find and insert must be strings of hex digits expressed
+in ASCII. The edited result is sent to //stdout//.
+
+The optional count if specified will cause editing to quit once the
+number of edits performed reaches that count.
+
+**hexsed** -[a|e|i|o] char|esc sequence.
+Delivers the 2 digit hex ASCII string that represents the input char.
+
+**hexsed** -s string
+Delivers the 2 didgit hex ASCII string for each byte in string.
+
+
+= DESCRIPTION =
+**hexsed** writes the edited content of the input file to //stdout//. If
+the hex sequence to find is not found then the output is a copy of the
+input. Optionally it will write a count of the deletions or changes.
+
+= OPTIONS =
+
+:  **-h, --help**
+print help information and exit.
+
+:  **-a, --ascii**
+Char. Outputs the 2 digit hex representation of the char input. Must be
+a single byte char, use --string for multi-byte chars.
+
+:  **-e, --escape**
+\char. Outputs the 2 digit hex representation of the escape
+sequence input. Single byte only after '\'.
+
+:  **-i, --integer**
+Decimal digits. Outputs the 2 digit hex representation of the digits input.
+Legal range is 0 - 255, outside range is an error.
+
+:  **-o, --octal**
+Octal digits. Outputs the 2 digit hex representation of the digits input.
+Legal range is 0 - 377, outside range is an error.
+
+:  **-s, --string**
+Null terminated array of bytes. Outputs the 2 digit hex representation
+of each byte in the string. Escape sequences like \n, \t may be included.
+
+:  **-n, --edit-count**
+Causes the count of applied edits to be output.
+
+
+= AUTHOR =
+Robert L Parker rlp1938@gmail.com
+

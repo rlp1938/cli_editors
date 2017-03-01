@@ -1,0 +1,29 @@
+README for hexsed
+
+hexsed - a stream editor that uses data in hex format for the string
+to delete or strings to find and replace.
+
+There are options to generate the hex data without needing to actually
+manually enter the hex data at all, eg:
+tofind=`hexsed -s 'string to find'`
+torepl=`hexsed -s 'replacement string'`
+hexsed /"$tofind"/"$torepl"/s somefile
+You may embed escape sequences within the character strings to be output
+in hex format. Eg '\n' will generate '10' the value of a line feed.
+This program is not a line editor. Nor does it use regular expressions.
+It works on simple patterns with the addition of escape sequences.
+Consequently, it gets it's main use for editing marked up data such as
+XML/HTML. It is quite easy to operate on patterns that span several
+lines. You may also restrict the number of times that a replacement or
+deletion operation may happen, eg:
+todel=`hexsed 'get rid of this just once'`
+hexsed =1 /"$todel"/d somefile
+
+FUTURE
+There will be an option -u, --unicode, to output the hex bytes
+represented by data like <U+2048>.
+Also there will be commands 'a', append the replacement string to the
+search string, 'i', insert the replacement string before the search
+string, and 'p', print only the lines containing the search string.
+It will also be able to restrict the editing operations to a selected
+group of lines by line number.
