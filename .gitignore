@@ -26,4 +26,5 @@
 inithtconvert.sh
 
 src/Hexsed/*.o
+src/Utils/*.o
 *.Po
