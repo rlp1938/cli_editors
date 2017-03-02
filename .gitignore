@@ -24,3 +24,6 @@
 /cnooptim.sh
 /zMakefile.am
 inithtconvert.sh
+
+src/Hexsed/*.o
+*.Po
