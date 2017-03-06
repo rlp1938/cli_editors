@@ -1,0 +1,26 @@
+README - for csv2html
+
+The purpose of this program is to generate html with inserted page break
+styles so that wkhtmltopdf can generate the pdf sensibly paginated.
+Wkhtmltopdf simply page breaks a table with many rows in the middle of
+the text within the row. This program takes the csv and under manual
+control generates html with one table per page and a forced page break
+before each table.
+
+The first required step is to generate a partly completed XML control
+file and then edit that control file to optionally name the generated
+html file, by default index.html. You may enter table header and/or
+table footer data or comment out either or both using C style comments
+(/* */).
+And then one page at a time enter the number of rows for the table on
+that page.
+
+It would be great to have something do this job automatically but though
+this program requires manual assistance it still completes a 1500 row
+csv file in less than half an hour.
+
+ASSUMPTIONS
+The CSV input is required to have comma separated columns and any commas
+embedded in the text within column text are required to be protected by
+wrapping the comma text inside "". This is the default output from
+LibreOffice.
