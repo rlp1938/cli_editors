@@ -72,7 +72,7 @@ void trace(const char *fn, char *fmt, ...)
 	char line[NAME_MAX];
 	char format[NAME_MAX];
 	char *bp, *pp, *lp;
-	
+
 	va_start(ap, fmt);
 	buf[0] = 0;	// strcat everything
 	bp = fmt;
@@ -137,6 +137,7 @@ void trace(const char *fn, char *fmt, ...)
 		bp = pp;	// move on to the next
 	} // while(1)
 	writefile(fn, buf, NULL, "a");
+	va_end(ap);
 } // trace()
 
 /* trace() - function to trace program execution.
@@ -163,7 +164,7 @@ int getdatatype(char *partformat)
 	*/
 	if (strstr(partformat, "%p")) return 7;	// void *
 	if (strstr(partformat, "%%")) return 8;	// just print '%'
-	
+
 	char *cp = partformat;	// reach past modifiers
 	cp = strchr(cp, '%');
 	if (!cp) return 0;	// just print it all.
@@ -171,7 +172,7 @@ int getdatatype(char *partformat)
 	while (isdigit(*cp)) cp++;	// field width
 	if (*cp == '.') cp++;
 	while (isdigit(*cp)) cp++;	// precision
-	
+
 	// the next group single char only
 	if (*cp == 'd') return 1;	// integer types
 	if (*cp == 'u') return 1;

@@ -21,4 +21,8 @@ output file of course.
 3. hexsed - a stream editor that uses data in hex format for the string
 to delete or strings to find and replace.
 
+4. csv2anki - takes a CSV file as input and writes a CSV output to
+stdout with the ordering of columns changed, deleted and/or combined as
+rquired. There is a README in src/Csv2anki/
+
 See the individual README files in src/* where they exist.

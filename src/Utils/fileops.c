@@ -394,7 +394,6 @@ size_t count_file_bytes(const char *path)
 	return count;
 } // count_file_bytes()
 
-
 void do_mkdir(const char *head_dir, const char *newdir)
 {
 	struct stat sb;
@@ -582,3 +581,35 @@ char *getconfigfile(const char *path, const char *fname)
 	sprintf(outpath, "%s/%s", path, fname);
 	return dostrdup(outpath);
 } // getconfigfile()
+
+fdata mem2str_n(char *pfrom, char *pto, int *nr)
+{
+	*nr = 0;
+	char *from = pfrom;
+	char *to = pto;
+	// check last char is '\n'
+	if (*(to - 1) != '\n') {	// grab 1 more byte
+		char *old = from;
+		from = realloc(from, to - from + 1);
+		// been moved?
+		if (old != from) {
+			to = from + (to - old);	// keep old offset
+		}
+		*to = '\n';
+		to++;	// final offset
+	}
+	char *cp = from;
+	while (cp < to) {
+		char *eol = memchr(cp, '\n', to - cp);
+		if (eol) {
+			*eol = '\0';
+			cp = eol;
+		}
+		*nr++;
+		cp++;
+	}
+	fdata retdat;
+	retdat.from = from;
+	retdat.to = to;
+	return retdat;
+}

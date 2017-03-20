@@ -1,0 +1,32 @@
+README for csv2anki
+A program to allow user to reorder and/or combine columns of a CSV file.
+
+The program writes the content of a named CSV file to stdout under the
+control of the user input list of column numbers and list of separators.
+The columns are numbered beginning with 1 and each and every column
+separator must be specified in a column separated list. Consequently the
+output separators may be anything other than commas.
+
+The input CSV file must use commas as column separators and there may be
+commas embedded within a column protected by wrapping the column in
+double quotes. This is because it is the default output of CSV from
+LibreOffice. By default, the program strips the quote protection of
+embedded commas in columns because it is expected that the separators in
+the output will be something else such as ';' or ' ' if 2 input columns
+are to be combined into 1 in the output. In particular this output is
+suitable for using the output CSV as input notes to the program 'anki'.
+
+The output separators are strings so it is possible to use something
+like '<br />' as an output column separator if required.
+
+It is possible to optionally transfer the quotations protecting input
+columns to the output if required. While you may not specify ',' as an
+output separator it is easy to use eg ';' and pipe the output through
+'sed' to replace it with ',' if the CSV format in use makes this a
+sensible choice. See the man page for more information.
+
+The correct number of input columns is any input CSV file is deemed to
+be the number in the first row. Columns having more or less columns in
+later rows are reported as errors and listed on stderr. They are not
+treated as fatal errors. Any columns of zero length will appear in the
+same way in the output.

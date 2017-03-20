@@ -89,7 +89,8 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = csv2html$(EXEEXT) cathtml$(EXEEXT) hexsed$(EXEEXT)
+bin_PROGRAMS = csv2html$(EXEEXT) cathtml$(EXEEXT) hexsed$(EXEEXT) \
+	csv2anki$(EXEEXT)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -112,6 +113,11 @@ am_cathtml_OBJECTS = src/Utils/fileops.$(OBJEXT) \
 	src/Cathtml/cathtml.$(OBJEXT)
 cathtml_OBJECTS = $(am_cathtml_OBJECTS)
 cathtml_LDADD = $(LDADD)
+am_csv2anki_OBJECTS = src/Utils/fileops.$(OBJEXT) \
+	src/Utils/stringops.$(OBJEXT) src/Csv2anki/csv2anki.$(OBJEXT) \
+	src/Csv2anki/gopt.$(OBJEXT)
+csv2anki_OBJECTS = $(am_csv2anki_OBJECTS)
+csv2anki_LDADD = $(LDADD)
 am_csv2html_OBJECTS = src/Utils/fileops.$(OBJEXT) \
 	src/Utils/firstrun.$(OBJEXT) src/Utils/stringops.$(OBJEXT) \
 	src/Csv2html/csv2html.$(OBJEXT) src/Csv2html/gopt.$(OBJEXT)
@@ -150,9 +156,10 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(cathtml_SOURCES) $(csv2html_SOURCES) $(hexsed_SOURCES)
-DIST_SOURCES = $(cathtml_SOURCES) $(csv2html_SOURCES) \
+SOURCES = $(cathtml_SOURCES) $(csv2anki_SOURCES) $(csv2html_SOURCES) \
 	$(hexsed_SOURCES)
+DIST_SOURCES = $(cathtml_SOURCES) $(csv2anki_SOURCES) \
+	$(csv2html_SOURCES) $(hexsed_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -320,6 +327,15 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_CFLAGS = -Wall -Wextra -O0 -D_GNU_SOURCE=1
+csv2anki_SOURCES = \
+	src/Utils/fileops.c \
+	src/Utils/fileops.h \
+	src/Utils/stringops.c \
+	src/Utils/stringops.h \
+	src/Csv2anki/csv2anki.c \
+	src/Csv2anki/gopt.c \
+	src/Csv2anki/gopt.h
+
 csv2html_SOURCES = \
 	src/Utils/fileops.c \
 	src/Utils/fileops.h \
@@ -350,6 +366,7 @@ hexsed_SOURCES = \
 	src/Utils/stringops.h
 
 man_MANS = \
+	src/Csv2anki/csv2anki.1 \
 	src/Csv2html/csv2html.1 \
 	src/Cathtml/cathtml.1 \
 	src/Hexsed/hexsed.1
@@ -358,6 +375,7 @@ man_MANS = \
 # deal with config files
 prgdir = $(datadir)/cli_edit
 prg_DATA = \
+	src/Csv2anki/csv2anki.1 \
 	src/Csv2html/csv2html.1 \
 	src/Csv2html/csv2html.cfg \
 	src/Csv2html/c2hmaster.css \
@@ -368,6 +386,7 @@ prg_DATA = \
 	src/Hexsed/hexsed.1
 
 EXTRA_DIST = \
+	src/Csv2anki/csv2anki.1 \
 	src/Csv2html/csv2html.1 \
 	src/Csv2html/csv2html.cfg \
 	src/Csv2html/c2hmaster.css \
@@ -496,6 +515,20 @@ src/Cathtml/cathtml.$(OBJEXT): src/Cathtml/$(am__dirstamp) \
 cathtml$(EXEEXT): $(cathtml_OBJECTS) $(cathtml_DEPENDENCIES) $(EXTRA_cathtml_DEPENDENCIES) 
 	@rm -f cathtml$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(cathtml_OBJECTS) $(cathtml_LDADD) $(LIBS)
+src/Csv2anki/$(am__dirstamp):
+	@$(MKDIR_P) src/Csv2anki
+	@: > src/Csv2anki/$(am__dirstamp)
+src/Csv2anki/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) src/Csv2anki/$(DEPDIR)
+	@: > src/Csv2anki/$(DEPDIR)/$(am__dirstamp)
+src/Csv2anki/csv2anki.$(OBJEXT): src/Csv2anki/$(am__dirstamp) \
+	src/Csv2anki/$(DEPDIR)/$(am__dirstamp)
+src/Csv2anki/gopt.$(OBJEXT): src/Csv2anki/$(am__dirstamp) \
+	src/Csv2anki/$(DEPDIR)/$(am__dirstamp)
+
+csv2anki$(EXEEXT): $(csv2anki_OBJECTS) $(csv2anki_DEPENDENCIES) $(EXTRA_csv2anki_DEPENDENCIES) 
+	@rm -f csv2anki$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(csv2anki_OBJECTS) $(csv2anki_LDADD) $(LIBS)
 src/Csv2html/$(am__dirstamp):
 	@$(MKDIR_P) src/Csv2html
 	@: > src/Csv2html/$(am__dirstamp)
@@ -528,6 +561,7 @@ hexsed$(EXEEXT): $(hexsed_OBJECTS) $(hexsed_DEPENDENCIES) $(EXTRA_hexsed_DEPENDE
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 	-rm -f src/Cathtml/*.$(OBJEXT)
+	-rm -f src/Csv2anki/*.$(OBJEXT)
 	-rm -f src/Csv2html/*.$(OBJEXT)
 	-rm -f src/Hexsed/*.$(OBJEXT)
 	-rm -f src/Utils/*.$(OBJEXT)
@@ -536,6 +570,8 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@src/Cathtml/$(DEPDIR)/cathtml.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/Csv2anki/$(DEPDIR)/csv2anki.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/Csv2anki/$(DEPDIR)/gopt.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/Csv2html/$(DEPDIR)/csv2html.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/Csv2html/$(DEPDIR)/gopt.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/Hexsed/$(DEPDIR)/gopt.Po@am__quote@
@@ -881,6 +917,8 @@ distclean-generic:
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
 	-rm -f src/Cathtml/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/Cathtml/$(am__dirstamp)
+	-rm -f src/Csv2anki/$(DEPDIR)/$(am__dirstamp)
+	-rm -f src/Csv2anki/$(am__dirstamp)
 	-rm -f src/Csv2html/$(DEPDIR)/$(am__dirstamp)
 	-rm -f src/Csv2html/$(am__dirstamp)
 	-rm -f src/Hexsed/$(DEPDIR)/$(am__dirstamp)
@@ -897,7 +935,7 @@ clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-	-rm -rf src/Cathtml/$(DEPDIR) src/Csv2html/$(DEPDIR) src/Hexsed/$(DEPDIR) src/Utils/$(DEPDIR)
+	-rm -rf src/Cathtml/$(DEPDIR) src/Csv2anki/$(DEPDIR) src/Csv2html/$(DEPDIR) src/Hexsed/$(DEPDIR) src/Utils/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-hdr distclean-tags
@@ -945,7 +983,7 @@ installcheck-am:
 maintainer-clean: maintainer-clean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-	-rm -rf src/Cathtml/$(DEPDIR) src/Csv2html/$(DEPDIR) src/Hexsed/$(DEPDIR) src/Utils/$(DEPDIR)
+	-rm -rf src/Cathtml/$(DEPDIR) src/Csv2anki/$(DEPDIR) src/Csv2html/$(DEPDIR) src/Hexsed/$(DEPDIR) src/Utils/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
