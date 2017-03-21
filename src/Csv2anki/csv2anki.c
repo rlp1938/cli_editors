@@ -43,15 +43,16 @@ static void freelist(char **list);
 static int *list2intarray(char *list);
 static char **list2strarray(char *list);
 static void editcsv(fdata csvdat, int *fldlist, char **seplist,
-					int fieldcount);
-static void printcsv(char *line, int *fldlist, char **seplist, int cls);
-static char **lexcsv(char *line, int cols);
+					int fieldcount, int keepqt);
+static void printcsv(char *line, int *fldlist, char **seplist, int cls,
+						int keepqt);
+static char **lexcsv(char *line, int cols, int keepqt);
 static char **stripqt(char **fields, int cols);
 
 int main(int argc, char **argv)
 {
 	options_t opts = process_options(argc, argv);
-
+	int keepqt = opts.keepqt;
 	// now process the non-option arguments
 	char *fieldlist = validatearg(argv[1], "field list", STR);
 	char *seplist = validatearg(argv[2], "separator list", STR);
@@ -68,7 +69,7 @@ int main(int argc, char **argv)
 	int *outfieldnum = list2intarray(fieldlist);
 	char **outlist = list2strarray(seplist);	// "<br />" is possible.
 	// TODO check fieldlist that it does not index a field out of range.
-	editcsv(csvdat, outfieldnum, outlist, fieldcount);
+	editcsv(csvdat, outfieldnum, outlist, fieldcount, keepqt);
 	freelist(outlist);
 	freeup(outfieldnum, csvdat.from, csvfile, seplist, fieldlist, NULL);
 	return 0;
@@ -202,7 +203,8 @@ char **list2strarray(char *list)
 	return res;
 } // list2strarray()
 
-void editcsv(fdata csvdat, int *fldlist, char **seplist, int fieldcount)
+void editcsv(fdata csvdat, int *fldlist, char **seplist, int fieldcount,
+				int keepqt)
 {	/* Count fields in each row and report missmatches. Write out the
 	 * rows that have matching field counts.
 	*/
@@ -216,7 +218,7 @@ void editcsv(fdata csvdat, int *fldlist, char **seplist, int fieldcount)
 				rowcount+1, colcount, fieldcount);
 		} else {	// print out fields under control of lists.
 			char *buf = dostrdup(line);
-			printcsv(buf, fldlist, seplist, colcount);
+			printcsv(buf, fldlist, seplist, colcount, keepqt);
 			free(buf);
 		}
 		rowcount++;
@@ -224,9 +226,10 @@ void editcsv(fdata csvdat, int *fldlist, char **seplist, int fieldcount)
 	}
 } // editcsv()
 
-void printcsv(char *line, int *fldlist, char **seplist, int cls)
+void printcsv(char *line, int *fldlist, char **seplist, int cls,
+				int keepqt)
 {	/* Extract the columns and print them as required by fldlst */
-	char **fields = lexcsv(line, cls);
+	char **fields = lexcsv(line, cls, keepqt);
 	int i = 0;
 	while (1) {
 		fputs(fields[fldlist[i] -1], stdout);
@@ -237,7 +240,7 @@ void printcsv(char *line, int *fldlist, char **seplist, int cls)
 	free(fields);
 } // printcsv()
 
-char **lexcsv(char *line, int cols)
+char **lexcsv(char *line, int cols, int keepqt)
 {	/* Return array of char * comprising CSV fields in line.
 	 * Take "" wrapping off fields if it exists.
 	 * Line is a copy, so it is safe to alter it.
@@ -261,6 +264,7 @@ char **lexcsv(char *line, int cols)
 		fields[i] = cp;
 		cp += strlen(cp) + 1;
 	}
+	if (keepqt) return(fields);
 	return stripqt(fields, cols);
 } // lexcsv()
 

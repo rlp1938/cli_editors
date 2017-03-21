@@ -25,8 +25,7 @@ char *helptext;
 char* synopsis;
 
 typedef struct options_t {	// to be initialised with required vars.
-int nothing;
-char *str;
+int keepqt;
 } options_t;
 
 void dohelp(int forced);

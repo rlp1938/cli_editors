@@ -12,6 +12,12 @@
 /cathtml
 /cathtml.plist/
 /cathtml.t2t
+/hexsed
+/hexsed.plist/
+/hexsed.t2t
+/csv2anki
+/csv2anki.plist/
+csv2anki.t2t
 /Makefile
 /stamp-h1
 /test*
