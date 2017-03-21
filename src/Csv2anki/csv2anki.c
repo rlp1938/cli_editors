@@ -54,9 +54,11 @@ int main(int argc, char **argv)
 	options_t opts = process_options(argc, argv);
 	int keepqt = opts.keepqt;
 	// now process the non-option arguments
-	char *fieldlist = validatearg(argv[1], "field list", STR);
-	char *seplist = validatearg(argv[2], "separator list", STR);
-	char *csvfile = validatearg(argv[3], "csv file", FIL);
+	char *fieldlist = validatearg(argv[optind], "field list", STR);
+	optind++;
+	char *seplist = validatearg(argv[optind], "separator list", STR);
+	optind++;
+	char *csvfile = validatearg(argv[optind], "csv file", FIL);
 	fdata csvdat = readfile(csvfile, 0, 1);
 	int lines;
 	(void)mem2str_n(csvdat.from, csvdat.to, &lines);

@@ -70,8 +70,8 @@ options_t process_options(int argc, char **argv)
 		int this_option_optind = optind ? optind : 1;
 		int option_index = 0;
 		static struct option long_options[] = {
-		{"help",		0,	0,	'h' },
-		{"quote",		0,	0,	'q' },
+		{"help",	0,	0,	'h' },
+		{"quote",	0,	0,	'q' },
 		{0,	0,	0,	0 }
 		};
 
