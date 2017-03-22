@@ -48,6 +48,7 @@ static void printcsv(char *line, int *fldlist, char **seplist, int cls,
 						int keepqt);
 static char **lexcsv(char *line, int cols, int keepqt);
 static char **stripqt(char **fields, int cols);
+static void rangecheck(int cols, int *outlist);
 
 int main(int argc, char **argv)
 {
@@ -69,8 +70,8 @@ int main(int argc, char **argv)
 	}
 	int fieldcount = countfields(csvdat.from);
 	int *outfieldnum = list2intarray(fieldlist);
+	rangecheck(fieldcount, outfieldnum);	// column no range check.
 	char **outlist = list2strarray(seplist);	// "<br />" is possible.
-	// TODO check fieldlist that it does not index a field out of range.
 	editcsv(csvdat, outfieldnum, outlist, fieldcount, keepqt);
 	freelist(outlist);
 	freeup(outfieldnum, csvdat.from, csvfile, seplist, fieldlist, NULL);
@@ -284,3 +285,17 @@ char **stripqt(char **fields, int cols)
 	} // for(i...)
 	return fields;
 } // stripqt()
+
+void rangecheck(int cols, int *outlist)
+{	/* Bring error and abort if anything in outlist is > cols or < 1 */
+	int idx = 0;
+	while (outlist[idx] > -1) {	// list has sentinel == -1 beyond end.
+		if (outlist[idx] < 1 || outlist[idx] > cols) {
+			fprintf(stderr,
+				"Column number, %d must be in range 1 to %d\n",
+					outlist[idx], cols);
+			exit(EXIT_FAILURE);
+		}
+		idx++;
+	}
+} // rangecheck()
