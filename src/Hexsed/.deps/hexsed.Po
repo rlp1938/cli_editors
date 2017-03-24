@@ -55,6 +55,8 @@ src/Hexsed/hexsed.o: src/Hexsed/hexsed.c /usr/include/stdc-predef.h \
  /usr/include/errno.h /usr/include/x86_64-linux-gnu/bits/errno.h \
  /usr/include/linux/errno.h /usr/include/x86_64-linux-gnu/asm/errno.h \
  /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
+ src/Hexsed/../Utils/stringops.h /usr/include/utime.h \
+ /usr/include/x86_64-linux-gnu/bits/timex.h src/Hexsed/../Utils/fileops.h \
  src/Hexsed/gopt.h
 
 /usr/include/stdc-predef.h:
@@ -212,5 +214,13 @@ src/Hexsed/../Utils/fileops.h:
 /usr/include/asm-generic/errno.h:
 
 /usr/include/asm-generic/errno-base.h:
+
+src/Hexsed/../Utils/stringops.h:
+
+/usr/include/utime.h:
+
+/usr/include/x86_64-linux-gnu/bits/timex.h:
+
+src/Hexsed/../Utils/fileops.h:
 
 src/Hexsed/gopt.h:

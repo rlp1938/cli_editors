@@ -40,13 +40,13 @@ cp "$bfn" "$hfn"
 tofind=`hexsed -s '</p>'`
 torepl=\
 `hexsed -s '<audio controls>\n\t<source src=xxx />\n</audio><br />\n</p>'`
-hexsed /"$tofind"/"$torepl"/s "$hfn" > x
+hexsed r/"$tofind"/"$torepl"/ "$hfn" > x
 mv x "$hfn"
 
 # Part 2
 tofind=`hexsed -s 'xxx'`
 torepl=`hexsed -s '"porn-audio/porn-xxx.mp3" type="audio/mpeg"'`
-hexsed /"$tofind"/"$torepl"/s "$hfn" > x
+hexsed r/"$tofind"/"$torepl"/ "$hfn" > x
 mv x "$hfn"
 
 # Now replace the 'xxx' in the audio source
@@ -56,7 +56,7 @@ do
 	torepl=`hexsed -s "$i"`
 	# prefixing the find expression with '=1' means only the first
 	# instance will be replaced.
-	hexsed =1/"$tofind"/"$torepl"/s "$hfn" > x
+	hexsed =1r/"$tofind"/"$torepl"/ "$hfn" > x
 	mv x "$hfn"
 done
 
@@ -73,7 +73,7 @@ do
 #	echo tofind $tofind
 	torepl="$tofind"0A"$tofind"0A
 #	echo torepl $torepl
-	hexsed /"$tofind"/"$torepl"/s "$hfn" > x
+	hexsed r/"$tofind"/"$torepl"/ "$hfn" > x
 	mv x "$hfn"
 done
 
@@ -83,13 +83,13 @@ do
 
 	tofind=`hexsed -s "$i".mp3`
 	torepl=`hexsed -s "$i"a.mp3`
-	hexsed =1/"$tofind"/"$torepl"/s "$hfn" > x
+	hexsed =1r/"$tofind"/"$torepl"/ "$hfn" > x
 	mv x "$hfn"
 	torepl=`hexsed -s "$i"b.mp3`
-	hexsed =1/"$tofind"/"$torepl"/s "$hfn" > x
+	hexsed =1r/"$tofind"/"$torepl"/ "$hfn" > x
 	mv x "$hfn"
 done
 
 # get rid of doubled line feeds
-hexsed /0A0A/0A/s "$hfn" > x
+hexsed r/0A0A/0A/ "$hfn" > x
 mv x "$hfn"

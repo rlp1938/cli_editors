@@ -26,6 +26,7 @@
 #include <getopt.h>
 #include <stdint.h>
 #include "../Utils/fileops.h"
+#include "../Utils/stringops.h"
 #include "gopt.h"
 
 typedef struct sedex {
@@ -40,10 +41,12 @@ typedef struct sedex {
 static char *eslookup(const char *tofind);
 static sedex validate_expr(const char *expr);
 static char *str2hex(const char *str);
-static int validatehexstr(const char *hexstr);
-static char *hex2asc(const char *hexstr);
-static int hexchar2int(const char *hexpair);
 static void editfile(const char *fn, sedex mysx, int quiet);
+static int countdelimiters(char *line);
+static int getoperator(char *buf, int delims);
+static int getcount(char *buf);
+static void getstrings(sedex *mysx, char *buf, int delims);
+static char *checkhexstr(char *tocheck, char *typ);
 
 int main(int argc, char **argv)
 {
@@ -113,133 +116,18 @@ char *eslookup(const char *tofind)
 } //
 
 sedex validate_expr(const char *expr)
-{
-	/*
+{	/*
 	 * Fill in the sedex struct with proper values from expr or abort
 	 * if anything in expr is malformed.
 	*/
 	char *buf;
-	char *cp;
-	buf = strdup(expr);
+	buf = dostrdup(expr);
 	sedex mysx = {0};
-	/* Adding the ability to specify a count of patterns to be edited.*/
-	if (buf[0] == '=') {
-		mysx.edcount = strtol(&buf[1], NULL, 10);
-		cp = &buf[1];
-		while (isdigit(*cp)) cp++;
-		char *tmp = strdup(cp);
-		strcpy(buf, tmp);
-		free(tmp);
-	} else {
-		mysx.edcount = INT_MAX;
-	}
-	size_t len = strlen(buf);
-	// test that expr has properly formed separators and command.
-	int badform = 0;
-	int count = 0;
-	int i;
-	for (i = 0; i < (int)len; i++) {
-		if (buf[i] == '/') {
-			count++;
-		}
-	}
-	if (buf[0] != '/' || buf[len - 2] != '/') {
-		badform = 1;
-	}
-	if (!(count == 2 || count == 3)) {
-		badform = 1;
-	}
-	char op = buf[len-1];
-	cp = strchr("dsai", op);
-	if (!cp) badform = 1;
-	if (op == 'd') {
-		if (count != 2) badform = 1;
-	} else {
-		if (count != 3) badform = 1;
-	}
-	if (badform) {
-		fprintf(stderr, "Badly formed expression:\n%s\n", expr);
-		exit(EXIT_FAILURE);
-	}
-
-	// format the hex lists
-	mysx.op = op;
-	mysx.flen = mysx.rlen = 0;
-	// calculate lengths
-	cp = buf;
-	cp++;	// get past initial '/'
-	while ((*cp != '/')) {
-		mysx.flen++;
-		cp++;
-	}
-
-	if (mysx.op == 's') {
-		cp++;	//  get past initial '/'
-		while ((*cp != '/')) {
-			mysx.rlen++;
-			cp++;
-		}
-	}
-	// check that we don't have 0 length strings
-	if (mysx.flen == 0) {
-		fprintf(stderr, "Zero length search string input %s\n", expr);
-		exit(EXIT_FAILURE);
-	}
-	if (mysx.op == 's') {
-		if (mysx.rlen == 0) {
-		fprintf(stderr, "Zero length replacement string input %s\n"
-					, expr);
-		exit(EXIT_FAILURE);
-		}
-	}
-	// check that user has not obviously fubarred the hex input
-	if (mysx.flen %2 != 0 || mysx.rlen %2 != 0) {
-		fprintf(stderr, "Each hex value must be input as a pair,"
-		" eg 00..0F etc\n, %s\n", expr);
-		exit(EXIT_FAILURE);
-	}
-
-	// set the find and replace strings and check for non-hex chars.
-	char *tofind, *toreplace;
-	cp = buf;
-	cp++;	// past initial '/'
-	char *ep = strchr(cp, '/');	// content of buf is valid.
-	*ep = 0;
-	tofind = strdup(cp);
-	if (mysx.op != 'd') {
-		cp = ep + 1;
-		ep = strchr(cp, '/');
-		*ep = 0;
-		toreplace = strdup(cp);
-	}
+	int delims = countdelimiters(buf);
+	mysx.op = getoperator(buf, delims);
+	mysx.edcount = getcount(buf);
+	getstrings(&mysx, buf, delims);
 	free(buf);
-	if (validatehexstr(tofind) == -1) {
-		fprintf(stderr, "invalid hex chars tofind: \n %s", tofind);
-		free(tofind);
-		exit(EXIT_FAILURE);
-	} else {
-		char *res = hex2asc(tofind);
-		mysx.tofind = strdup(res);
-		free(res);
-		free(tofind);
-	}
-
-	if (mysx.op != 'd') {
-		if (validatehexstr(toreplace) == -1) {
-			fprintf(stderr, "invalid hex chars toreplace: \n %s",
-					toreplace);
-			free(toreplace);
-			exit(EXIT_FAILURE);
-		} else {
-			char *res = hex2asc(toreplace);
-			mysx.toreplace = strdup(res);
-			free(res);
-			free(toreplace);
-		}
-	}
-	// mysx.[f|r]len is double what it now is, re-assign them.
-	mysx.flen = strlen(mysx.tofind);
-	if (mysx.toreplace) mysx.rlen = strlen(mysx.toreplace);
 	return mysx;
 } // validate_expr()
 
@@ -268,54 +156,6 @@ char *str2hex(const char *str)
 	}
 	return buf;
 }
-
-int validatehexstr(const char *hexstr)
-{
-	char *validhex = "0123456789abcdefABCDEF";
-	size_t len = strlen(hexstr);
-	size_t i;
-	for (i = 0; i < len; i++) {
-		char *cp = strchr(validhex, hexstr[i]);
-		if (!cp) return -1;
-	}
-	return 0;
-}
-
-char *hex2asc(const char *hexstr)
-{	/* take a string of hex ascii represented digits and return the
-	 * normal ascii representation.
-	*/
-	size_t len = strlen(hexstr);
-	char *res = calloc(len / 2 + 1, 1);	// 1 byte result for each 2 in.
-	char wrk[3] = {0};
-	size_t i, idx;
-	for (i=0, idx=0; i < len; idx++, i += 2) {
-		strncpy(wrk, &hexstr[i], 2);
-		char c = hexchar2int(wrk);
-		res[idx] = c;
-	}
-	return res;
-}
-
-int hexchar2int(const char *hexpair)
-{
-	char wrk[3] = {0};
-	int c;
-	char *list = "0123456789ABCDEF";
-	int i;
-	for (i = 0; i < 2; i++) {
-		wrk[i] = toupper(hexpair[i]);
-		char *test = strchr(list, wrk[i]);
-		if (!test) {
-			fputs("\n", stdout);
-			fflush(stdout);
-			fprintf(stderr, "Not legal hex: %s\n", wrk);
-			exit(EXIT_FAILURE);
-		}
-	}
-	c = strtol(wrk, NULL, 16);
-	return c;
-} // hexchar2int()
 
 void editfile(const char *fn, sedex mysx, int quiet)
 {
@@ -348,7 +188,7 @@ void editfile(const char *fn, sedex mysx, int quiet)
 				case 'd':	// delete find string
 					// do nothing
 					break;
-				case 's':	// substitute find string.
+				case 'r':	// replace find string.
 					fwrite(mysx.toreplace, 1, mysx.rlen, stdout);
 					break;
 			} // switch()
@@ -365,3 +205,118 @@ void editfile(const char *fn, sedex mysx, int quiet)
 	free(mysx.tofind);
 
 } // editfile()
+
+int countdelimiters(char *line)
+{	/* count '/' in line. Abort with error unless there are 2 or 3 */
+	int count = 0;
+	char *cp = line;
+	while ((cp=strchr(cp, '/'))) {
+		count++;
+		cp++;
+	}
+	if (count == 2 || count == 3) {
+		return count;
+	}
+	fprintf(stderr, "Badly formed expression: %s\n", line);
+	exit(EXIT_FAILURE);
+} // countdelimiters()
+
+int getoperator(char *buf, int delims)
+{	/* get the command operator. Abort with error if it's not valid. */
+	char *cp = strchr(buf, '/');	// I know that '/' does exist.
+	cp --;	// look at char before '/'
+	int oper = *cp;
+	switch (oper)
+	{
+		case 'a':	// requires 3 delimiters
+		case 'i':
+		case 'r':
+		if (delims != 3) {
+			fprintf(stderr,
+			"Operator %c requires find and replace strings:\n%s\n",
+					oper, buf);
+			exit(EXIT_FAILURE);
+		}
+			break;	// requires 2 delimiters
+		case 'd':
+		if (delims != 2) {
+			fprintf(stderr,
+			"Operator %c requires find string only:\n%s\n", oper, buf);
+			exit(EXIT_FAILURE);
+		}
+			break;
+		default:
+		fprintf(stderr, "Illegal operator: %c\n", oper);
+		exit(EXIT_FAILURE);
+			break;
+	}
+	return oper;
+} // getoperator()
+
+int getcount(char *buf)
+{	/* If there is a count, return it or set default value */
+	char *line = dostrdup(buf);	// will butcher it.
+	char *cp = strchr(line, '/');	// truncate line at '/'
+	*cp = 0;
+	int ret = INT_MAX;
+	cp = strchr(line, '=');
+	if (cp) {
+		cp++;
+		ret = strtol(cp, NULL, 10);
+	}
+	free(line);
+	return ret;
+} // getcount()
+
+void getstrings(sedex *mysx, char *buf, int delims)
+{	/* Return validated find string and replacement string if required
+	 * into mysx.
+	* */
+	char *line = dostrdup(buf);
+	char *begin = strchr(line, '/');
+	*begin = 0;
+	begin++;	// look past '/'
+	char *end = strchr(begin, '/');
+	*end = 0;
+	mysx->tofind = checkhexstr(begin, "find");
+	mysx->flen = strlen(mysx->tofind);
+	if (delims == 3) {
+		begin = end + 1;
+		end = strchr(begin, '/');
+		*end = 0;
+		mysx->toreplace = checkhexstr(begin, "replace");
+		mysx->rlen = strlen(mysx->toreplace);
+	}
+	free(line);
+} // getstrings()
+
+char *checkhexstr(char *tocheck, char *typ)
+{	/* make sure that tocheck is valid hex and if so return ascii */
+	size_t len = strlen(tocheck);
+	if (len == 0) {
+		fprintf(stderr, "%s string is zero length.\n", typ);
+		exit(EXIT_FAILURE);
+	}
+	if (len %2 != 0) {
+		fprintf(stderr, "%s hex input must be paired, 00, 01, 0f..."
+					", %s\n", typ, tocheck);
+		exit(EXIT_FAILURE);
+	}
+	char *teststr = dostrdup(tocheck);	// It's double the required size.
+	memset(teststr, 0, len);
+	size_t idx, i;
+	for (idx = 0, i = 0; idx < len; idx+=2, i++) {
+		char num[3] = {0};
+		strncpy(num, &tocheck[idx], 2);
+		int x = strtol(num, NULL, 16);
+		if (x == 0x0 && strcmp("00", num) != 0) {
+			fprintf(stderr, "Invalid hex chars at %lu in %s string.\n",
+						idx, typ);
+			exit(EXIT_FAILURE);
+		}
+		teststr[i] = x;
+	}
+	char *res = dostrdup(teststr);
+	free(teststr);
+	return res;
+} // checkhexstr()

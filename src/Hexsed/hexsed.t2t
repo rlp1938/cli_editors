@@ -1,4 +1,4 @@
-hexsed
+HEXSED
 Linux User's Manual
 %%mtime(%Y-%m-%d)
 
@@ -6,9 +6,9 @@ Linux User's Manual
 **hexsed** - a stream editor that uses parameters supplied in hex.
 
 = SYNOPSIS =
-**hexsed** [-n] [=count]/find/d filename
+**hexsed** [-n] [=count]d/find/ filename
 
-**hexsed** [-n] [=count]/find/insert/op filename
+**hexsed** [-n] [=count]op/find/insert/ filename
 
 where op is one of: i, insert before find string; a, append to find
 string; and r, replace the find string.

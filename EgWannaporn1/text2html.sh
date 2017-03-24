@@ -40,19 +40,19 @@ bfn=wannaporns-65-thai-phrases.bak
 cp "$bfn" "$fn"
 
 # get rid of 'LS'.
-hexsed /e280a8/d "$fn" > x
+hexsed d/e280a8/ "$fn" > x
 mv x "$fn"
 
 # get rid of 'FF'.
-hexsed /0c/d "$fn" > x
+hexsed d/0c/ "$fn" > x
 mv x "$fn"
 
 # line feed pairs to become single.
-hexsed /0a0a/0a/s "$fn" > x
+hexsed r/0a0a/0a/ "$fn" > x
 mv x "$fn"
 
 # the end point is to be a html file, and I want '<br />' at each eol.
-hexsed /0a/3c6272202f3e0a/s "$fn" > x
+hexsed r/0a/3c6272202f3e0a/ "$fn" > x
 mv x "$fn"
 
 # initialise html file
@@ -77,7 +77,7 @@ EOT
 # 1. the top of the list
 tofind=`hexsed -s '\n1.'`
 torepl=`hexsed -s '\n<p>'`"$tofind"
-hexsed /"$tofind"/"$torepl"/s "$hfn" > x
+hexsed r/"$tofind"/"$torepl"/ "$hfn" > x
 mv x "$hfn"
 
 # 2. almost the rest of them.
@@ -85,12 +85,12 @@ for i in `seq 2 65`
 do
 	tofind=`hexsed -s '\n'"$i"'.'`	# find only at start of line.
 	torepl=`hexsed -s '\n</p>\n<p>'`"$tofind"
-	hexsed /"$tofind"/"$torepl"/s "$hfn" > x
+	hexsed r/"$tofind"/"$torepl"/ "$hfn" > x
 	mv x "$hfn"
 done
 
 # 3. the last.
 tofind=`hexsed -s '\n</body>'`
 torepl=`hexsed -s '\n</p>\n</body>'`
-hexsed /"$tofind"/"$torepl"/s "$hfn" > x
+hexsed r/"$tofind"/"$torepl"/ "$hfn" > x
 mv x "$hfn"

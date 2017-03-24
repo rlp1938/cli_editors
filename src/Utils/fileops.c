@@ -584,7 +584,7 @@ char *getconfigfile(const char *path, const char *fname)
 
 fdata mem2str_n(char *pfrom, char *pto, int *nr)
 {
-	*nr = 0;
+	int num = 0;
 	char *from = pfrom;
 	char *to = pto;
 	// check last char is '\n'
@@ -605,9 +605,10 @@ fdata mem2str_n(char *pfrom, char *pto, int *nr)
 			*eol = '\0';
 			cp = eol;
 		}
-		*nr++;
+		num++;
 		cp++;
 	}
+	*nr = num;
 	fdata retdat;
 	retdat.from = from;
 	retdat.to = to;
