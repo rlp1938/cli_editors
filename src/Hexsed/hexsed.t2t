@@ -24,7 +24,12 @@ number of edits performed reaches that count.
 Delivers the 2 digit hex ASCII string that represents the input char.
 
 **hexsed** -s string
+
 Delivers the 2 didgit hex ASCII string for each byte in string.
+
+**hexsed** -u codepoint
+
+Delivers the string of hex bytes representing the utf8 codepoint given.
 
 
 = DESCRIPTION =
@@ -52,6 +57,13 @@ Legal range is 0 - 255, outside range is an error.
 :  **-o, --octal**
 Octal digits. Outputs the 2 digit hex representation of the digits input.
 Legal range is 0 - 377, outside range is an error.
+
+:  **-u, --utf8**
+Utf8 codepoint in various representations: '<U+nnnn>' where nnnn is
+hex codepoint, '&#Xnnnn;' or '&#nnnn;'; hex or decimal representation of
+html entity codepoint repectively, or unadorned numbers, 0xnnnn for hex;
+0nnnn for octal; or simply nnnn for a decimal number. If the codepoint
+number is too large for 4 byte utf8 sequence it's an error.
 
 :  **-s, --string**
 Null terminated array of bytes. Outputs the 2 digit hex representation

@@ -47,6 +47,12 @@ static int getoperator(char *buf, int delims);
 static int getcount(char *buf);
 static void getstrings(sedex *mysx, char *buf, int delims);
 static char *checkhexstr(char *tocheck, char *typ);
+static char *strcodepoint2hex(char *uinp);
+static size_t getcodepoint(char *userinput);
+static void upper(char *line);
+static unsigned char *convert(char *userinput);
+static size_t getbytecount(size_t codepoint);
+static char *prlist(unsigned char *list);
 
 int main(int argc, char **argv)
 {
@@ -58,6 +64,13 @@ int main(int argc, char **argv)
 		fprintf(stdout, "%s\n", cp);
 		free(cp);
 		free(opts.line);
+		exit(EXIT_SUCCESS);
+	}
+	if (opts.uinp) {
+		char *cp = strcodepoint2hex(opts.uinp);
+		fprintf(stdout, "%s\n", cp);
+		free(cp);
+		free(opts.uinp);
 		exit(EXIT_SUCCESS);
 	}
 	if (opts.esc) {
@@ -320,3 +333,110 @@ char *checkhexstr(char *tocheck, char *typ)
 	free(teststr);
 	return res;
 } // checkhexstr()
+
+size_t getcodepoint(char *userinput)
+{	/* Return codepoint as input by the user. Many formats allowed.*/
+	size_t len = strlen(userinput);
+	char *line = strdup(userinput);
+	upper(line);
+	size_t res;
+	if (strncmp(line, "<U+", 3) == 0 && line[len-1] == '>') {
+		// canonical expression of unicode
+		res = strtol(line+3, NULL, 16);
+	} else if (strncmp(line, "&#X", 3) == 0 && line[len-1] == ';') {
+		// the next 2 are what might happen inside html
+		line[1] = '0';
+		res = strtol(line+1, NULL, 16);
+	} else if (strncmp(line, "&#", 2) == 0 && line[len-1] == ';') {
+		res = strtol(line+2, NULL, 10);
+	} else {	// and this for a simple unadorned number;
+		// nnnn for decimal, 0nnnn for octal, and 0xnnnn for hex.
+		res = strtol(line, NULL, 0);
+	}
+	return res;
+} // getcodepoint()
+
+void upper(char *line)
+{	/* convert any a..z to A..Z */
+	char *cp = line;
+	while (*cp) {
+		*cp = toupper(*cp);
+		cp++;
+	}
+} // upper()
+
+unsigned char *convert(char *userinput)
+{	/* Convert the user's unicode form into multi-byte hex */
+	static unsigned char list[5] = {0};
+	size_t codepoint = getcodepoint(userinput);
+	size_t bytes = getbytecount(codepoint);
+	if (bytes == 1) {
+		list[0] = codepoint;
+		return list;
+	}
+	unsigned char andmasks[5];
+	andmasks[4] = strtol("00000111", NULL, 2);
+	andmasks[3] = strtol("00001111", NULL, 2);
+	andmasks[2] = strtol("00011111", NULL, 2);
+	unsigned char ormasks[5];
+	ormasks[4] = strtol("11110000", NULL, 2);
+	ormasks[3] = strtol("11100000", NULL, 2);
+	ormasks[2] = strtol("11000000", NULL, 2);
+	unsigned char andmask = strtol("00111111", NULL, 2);
+	unsigned char ormask = strtol("10000000", NULL, 2);
+	size_t i;
+	for (i = bytes-1; i > 0 ; i--) {
+		list[i] = (codepoint & andmask) | ormask;
+		codepoint >>= 6;	// shift 6 bits right;
+	}
+	list[0] = (codepoint & andmasks[bytes]) | ormasks[bytes];
+	return list;
+} // convert()
+
+size_t getbytecount(size_t codepoint)
+{
+	size_t res;
+	if (codepoint > 0x10ffff) {
+		fprintf(stderr, "Codepoint is greater than utf maximum: %lu",
+					codepoint);
+		exit(EXIT_FAILURE);
+	} else if (codepoint > 0xffff) {
+		res = 4;
+	} else if (codepoint > 0x7ff) {
+		res = 3;
+	} else if (codepoint > 0x7f) {
+		res = 2;
+	} else {
+		res = 1;
+	}
+	return res;
+} // getbytecount()
+
+char *prlist(unsigned char *list)
+{	/* convert list of chars to list of printable hex values */
+	unsigned char *cp = list;
+	size_t i = 0;
+	while (*cp) {	// must be NULL terminated input
+		i++;
+		cp++;
+	}
+	char *outlist = calloc(2*i+1, 1);
+	i = 0;
+	size_t j=0;
+	cp = list;
+	while (list[i]) {
+		sprintf(&outlist[j], "%.2x", list[i]);
+		i++; j+=2;
+	}
+	return outlist;
+} // prlist()
+
+char *strcodepoint2hex(char *uinp)
+{	/* uinp may be '<U+nnnn>'(nnnn hex), '&Xnnnn;'(nnnn hex),
+	 *'&nnnn;' (nnnn dec), 0xnnnn (nnnn hex), 0nnnn (nnnn oct),
+	 * or just nnnn (nnnn dec).
+	*/
+	unsigned char *list = convert(uinp);
+	char *out = prlist(list);
+	return out;
+} // strcodepoint2hex()

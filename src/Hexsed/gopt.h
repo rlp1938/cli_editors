@@ -29,6 +29,7 @@ typedef struct options_t {
 int ci;
 int quiet;
 char *line;
+char *uinp;
 char *esc;
 } options_t;
 

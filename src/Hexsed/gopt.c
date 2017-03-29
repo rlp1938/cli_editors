@@ -67,7 +67,7 @@ options_t process_options(int argc, char **argv)
   "\tCauses the count of applied edits to be output.\n"
   ;
 
-	optstring = ":ha:e:i:o:s:n";
+	optstring = ":ha:e:i:o:u:s:n";
 
 	/* declare and set defaults for local variables. */
 
@@ -91,8 +91,9 @@ options_t process_options(int argc, char **argv)
 		{"octal",		1,	0,	'o' },
 		{"string",		1,	0,	's' },
 		{"edit-count",	0,	0,	'n' },
+		{"utf8",		1,	0,	'u' },
 		{0,	0,	0,	0 }
-			};
+		};
 
 
 		c = getopt_long(argc, argv, optstring,
@@ -126,6 +127,9 @@ options_t process_options(int argc, char **argv)
 			opts.ci = strtoul(optarg, NULL, 8);
 			fprintf(stdout, "%X\n", opts.ci);
 			exit(EXIT_SUCCESS);
+		break;
+		case 'u':
+			opts.uinp = dostrdup(optarg);
 		break;
 		case 's':
 			opts.line = dostrdup(optarg);

@@ -1,4 +1,4 @@
-.TH "HEXSED" 1 "2017-03-24" "Linux User's Manual"
+.TH "HEXSED" 1 "2017-03-29" "Linux User's Manual"
 
 
 .SH NAME
@@ -32,7 +32,15 @@ Delivers the 2 digit hex ASCII string that represents the input char.
 
 .P
 \fBhexsed\fR \-s string
+
+.P
 Delivers the 2 didgit hex ASCII string for each byte in string.
+
+.P
+\fBhexsed\fR \-u codepoint
+
+.P
+Delivers the string of hex bytes representing the utf8 codepoint given.
 
 .SH DESCRIPTION
 
@@ -66,6 +74,14 @@ Legal range is 0 \- 255, outside range is an error.
  \fB\-o, \-\-octal\fR
 Octal digits. Outputs the 2 digit hex representation of the digits input.
 Legal range is 0 \- 377, outside range is an error.
+
+.TP
+ \fB\-u, \-\-utf8\fR
+Utf8 codepoint in various representations: '<U+nnnn>' where nnnn is
+hex codepoint, '&#Xnnnn;' or '&#nnnn;'; hex or decimal representation of
+html entity codepoint repectively, or unadorned numbers, 0xnnnn for hex;
+0nnnn for octal; or simply nnnn for a decimal number. If the codepoint
+number is too large for 4 byte utf8 sequence it's an error.
 
 .TP
  \fB\-s, \-\-string\fR
