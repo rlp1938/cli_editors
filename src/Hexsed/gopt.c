@@ -77,7 +77,7 @@ options_t process_options(int argc, char **argv)
 	opts.line = (char *)NULL;
 	opts.quiet = 1;
 	opts.esc = (char *)NULL;
-
+	opts.uinp = (char *)NULL;
 	int c;
 
 	while(1) {

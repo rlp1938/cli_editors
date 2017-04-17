@@ -1,0 +1,65 @@
+ออกเสียงถูกไหม,òk sĭang tòok mái,Am I pronouncing it correctly?
+เหมือนกันไหม,mĕuan gan mái,Are they the same?
+คุณแพ้อะไรไหม,kun páe a-rai mái,Are you allergic to anything?
+คืนนี้ว่างไหม,keun née wâang mái,Are you free tonight?
+พร้อมไหม / พร้อมหรือยัง,próm mái / próm rĕu yang,Are you ready?
+แน่ใจหรือเปล่า / แน่ใจนะ,nâe jai rĕu bplàao / nâe jai ná,Are you sure?
+รอใครอยู่หรือเปล่า,ror krai yòo rĕu bplàao,Are you waiting for someone?
+วันนี้ทำงานหรือเปล่า / ไหม,wan née tam ngaan rĕu bplàao / mái,Are you working today?
+พรุ่งนี้ทำงานหรือเปล่า / ไหม,prôong née tam ngaan rĕu bplàao / mái,Are you working tomorrow?
+เช็คบิลด้วย ครับ/ค่ะ,chék bin dûay kráp/kâ,"May I have the bill, please?"
+ขอลองหน่อยได้ไหม ครับ/คะ,kŏr lông nòi dâai mái kráp/ká,May I try it on?
+ขอใช้โทรศัพท์คุณหน่อยได้ไหม,kŏr chái toh-rá-sap kun nòi dâai mái,May I use your phone?
+ขอเมนูหน่อย ครับ/คะ,kŏr may-noo nòi kráp/ká,"May I have the menu, please?"
+ขอขนมปังอีกได้ไหม ครับ/คะ,kŏr kà-nŏm pang èek dâai mái kráp/ká,"May I have some more bread, please?"
+นั่งตรงโน้นได้ไหม ครับ/คะ,nâng dtrong nóhn dâai mái kráp/ká,May I sit over there?
+ถือให้หน่อยได้ไหม ครับ/คะ,tĕu hâi nòi dâai mái kráp/ká,May you carry this for me?
+ช่วยอะไรหน่อยได้ไหม ครับ/คะ,chûay a-rai nòi dâai mái kráp/ká,Would you do me a favor?
+พูดดังอีกนิดได้ไหม ครับ/คะ,pôot dang èek nít dâai mái kráp/ká,"Can you speak louder, please?"
+พูดช้าๆหน่อยได้ไหม ครับ/คะ,pôot cháa cháa nòi dâai mái kráp/ká,"Can you speak slowly, please?"
+ช่วยแปลนี่ให้หน่อยได้ไหม,chûay bplae nêe hâi nòi dâai mái,Would you translate this for me?
+มีแฟนหรือยัง,mee faen rĕu yang,Do you have a boyfriend/girlfriend?
+แบบนี้เบอร์สิบเอ็ดมีไหม,bàep née ber sìp èt mee mái,Do you have this in size 11?
+ทำกับข้าวเป็นไหม,tam gàp khâao bpen mái,Do you know how to cook?
+ขับรถเป็นไหม,kàp rót bpen mái,Do you know how to drive?
+ว่ายน้ำเป็นไหม,wâai náam bpen mái,Do you know how to swim?
+ชอบดูทีวีไหม,chôp doo tee-wee mái,Do you like to watch TV?
+เล่นกีฬาอะไรไหม,lâyn gee-laa a-rai mái,Do you play any sports?
+พูดภาษาอังกฤษเป็นไหม,pôot paa-săa ang-grit bpen mái,Do you speak English?
+รับบัตรเครดิตไหม,ráp bàt kay-dìt mái,Do you take credit cards?
+(ที่นี่) มีใครพูดภาษาอังกฤษเป็นไหม,(têe nêe) mee krai pôot paa-săa ang-grit bpen mái,Does anyone here speak English?
+อย่าทำแบบนั้น,yàa tam bàep nán,Don't do that.
+ไม่ต้องห่วง,mâi dtông hùang,Don't worry.
+คุณ (พูด) ว่าอะไรนะ,kun pôot wâa a-rai ná,What did you say?
+ช่างมันเหอะ,châng man hùh,Forget it. ( used to tell someone that something is not important and not to worry about it ) 
+ตาม ผม/ฉัน มา,dtaam pŏm/chán maa,Follow me.
+บางครั้ง,baang kráng,From time to time.
+สุขสันต์วันเกิด,sùk săn wan gèrt,Happy birthday.
+เคยทำแบบนี้มาก่อนหรือเปล่า,koie tam bàep née maa gòn rĕu bplàao,Have you done this before? 
+กินอะไรหรือยัง,gin a-rai rĕu yang,Have you eaten yet?
+เคยดูหนังเรื่องนี้หรือยัง,koie doo năng rêuang née rĕu yang,Have you seen this movie?
+เขาไม่เคยให้อะไรฉันเลย,kháo mâi koie hâi a-rai chán loie,He never gives me anything.
+รู้ได้ยังไง,róo dâai yang ngai,How do you know?
+ออกเสียงยังไง,òk sĭang yang ngai,How do you pronounce that?
+ภาษาไทยพูดว่ายังไง,paa-săa tai pôot wâa yang ngai,How do you say it in Thai?
+สะกดยังไง,sà-gòt yang ngai,How do you spell it?
+ให้ ผม/ฉัน ช่วยไหม,hâi pŏm/chán chûay mái,Do you want me to help?
+หลับตาทำยังได้เลย,làp dtaa tam yang dâai loie,I can do it with my eyes shut.
+ใครๆก็ทำได้,krai krai gôr tam dâai,Anyone can do it.
+ทานไม่ไหวแล้วครับ/ค่ะ ขอบคุณ ครับ/ค่ะ,taan mâi wăai láew kráp/kâ kòp kun kráp/kâ,"I can't eat anymore, thank you".
+ฉันไม่ชอบให้ใครมาสั่ง,chăn mâi chôp hâi krai maa sàng,I don't like it when people give me orders.
+โกหกทั้งเพ!,go-hòk táng pay,"a whole bunch of lies!, a whole collection or series of lies, a pack of lies."
+ไม่นั่งใกล้ๆเด็กนะ ครับ/คะ,mâi nâng glâi glâi dèk ná kráp/ká,I don't want to be seated next to a child.
+คืนนี้ผมขอออกไปเที่ยวกับเพื่อนๆได้ไหม,keun née pŏm kŏr òk bpai tîeow gàp pêuan pêuan dâai mái,Can I go out with my friends tonight?
+พอมั้ย,por mái,Is it enough?
+ฉันหาแว่นตาผมไม่เจอ คุณเห็นมั่งไหม,chăn hăa wâen dtaa pŏm mâi jer kun hĕn mâng mái,"I can't find my glasses, have you seen them?"
+เราเคยเจอกันมาก่อนหรือเปล่า,rao koie jer gan maa gòn rĕu bplàao,Have we met before?
+เกือบจำคุณไม่ได้แน่ะ,geup jam kun mâai dâai nàe,I almost didn't recognize you.
+ขอโทษที่ให้รอ,kŏr tôht têe hâi ror,Sorry to keep you waiting.
+กำลังรีบ,gam lang rêep,I am in a hurry.
+ตามสบาย ไม่ต้องรีบ,dtaam sà baai mâi dtông rêep,Take your time.
+หยุดเดี๋ยวนี้นะ,yùt diĕow née ná,Stop it right now !
+อย่าลืมนะ,yàa leum ná,Don't forget.
+ฝันไปเถอะ,făn bpai tùh,In your dreams!
+อย่าแม้แต่จะคิด,yàa máe dtàe jà kít,Don't even think about it.
+ทำตามที่หัวใจคุณบอก,tam dtaam têe hŭa jai kun bòk,Follow your heart.

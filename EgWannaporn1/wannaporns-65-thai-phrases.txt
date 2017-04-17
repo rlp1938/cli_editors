@@ -27,28 +27,28 @@ prôong née tam ngaan rĕu bplàao / mái <br />
 Are you working tomorrow?<br />
 10. เช็คบิลด้วย ครับ/ค่ะ<br />
 chék bin dûay kráp/kâ <br />
-Can I have the bill, please?<br />
+May I have the bill, please?<br />
 11. ขอลองหน่อยได้ไหม ครับ/คะ<br />
 kŏr lông nòi dâai mái kráp/ká <br />
-Can I try it on?<br />
+May I try it on?<br />
 12. ขอใช้โทรศัพท์คุณหน่อยได้ไหม<br />
 kŏr chái toh-rá-sap kun nòi dâai mái <br />
-Can I use your phone?<br />
+May I use your phone?<br />
 13. ขอเมนูหน่อย ครับ/คะ<br />
 kŏr may-noo nòi kráp/ká <br />
-Can I have the menu, please?<br />
+May I have the menu, please?<br />
 14. ขอขนมปังอีกได้ไหม ครับ/คะ<br />
 kŏr kà-nŏm pang èek dâai mái kráp/ká  <br />
-Can I have some more bread, please?<br />
+May I have some more bread, please?<br />
 15. นั่งตรงโน้นได้ไหม ครับ/คะ<br />
 nâng dtrong nóhn dâai mái kráp/ká  <br />
-Can I sit over there?<br />
+May I sit over there?<br />
 16. ถือให้หน่อยได้ไหม ครับ/คะ<br />
 tĕu hâi nòi dâai mái kráp/ká <br />
-Can you carry this for me?<br />
+May you carry this for me?<br />
 17. ช่วยอะไรหน่อยได้ไหม ครับ/คะ<br />
 chûay a-rai nòi dâai mái kráp/ká <br />
-Can you do me a favor?<br />
+Would you do me a favor?<br />
 18. พูดดังอีกนิดได้ไหม ครับ/คะ<br />
 pôot dang èek nít dâai mái kráp/ká <br />
 Can you speak louder, please?<br />
@@ -57,7 +57,7 @@ pôot cháa cháa nòi dâai mái kráp/ká <br />
 Can you speak slowly, please?<br />
 20. ช่วยแปลนี่ให้หน่อยได้ไหม<br />
 chûay bplae nêe hâi nòi dâai mái <br />
-Can you translate this for me?<br />
+Would you translate this for me?<br />
 21. มีแฟนหรือยัง<br />
 mee faen rĕu yang <br />
 Do you have a boyfriend/girlfriend?<br />

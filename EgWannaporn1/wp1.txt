@@ -1,0 +1,65 @@
+1. ออกเสียงถูกไหม,òk sĭang tòok mái,Am I pronouncing it correctly?,sound:wp1-xxx.mp3
+2. เหมือนกันไหม,mĕuan gan mái,Are they the same?,sound:wp1-xxx.mp3
+3. คุณแพอะไรไหม,kun páe a-rai mái,Are you allergic to anything?,sound:wp1-xxx.mp3
+4. คืนนี้ วางไหม,keun née wâang mái,Are you free tonight?,sound:wp1-xxx.mp3
+5. พรอมไหม / พรอมหรือยัง,próm mái / próm rĕu yang,Are you ready?,sound:wp1-xxx.mp3
+6. แน ใจหรือเปลา / แน ใจนะ,nâe jai rĕu bplàao / nâe jai ná,Are you sure?,sound:wp1-xxx.mp3
+7. รอใครอยูหรือเปลา,ror krai yòo rĕu bplàao,Are you waiting for someone?,sound:wp1-xxx.mp3
+8. วันนี้ ทํางานหรือเปลา / ไหม,wan née tam ngaan rĕu bplàao / mái,Are you working today?,sound:wp1-xxx.mp3
+9. พรุงนี้ ทํางานหรือเปลา / ไหม,prôong née tam ngaan rĕu bplàao / mái,Are you working tomorrow?,sound:wp1-xxx.mp3
+10. เช็คบิลดวย ครับ/คะ,chék bin dûay kráp/kâ,"Can I have the bill, please?",sound:wp1-xxx.mp3
+11. ขอลองหน อยไดไหม ครับ/คะ,kŏr lông nòi dâai mái kráp/ká,Can I try it on?,sound:wp1-xxx.mp3
+12. ขอใชโทรศัพทคุณหน อยไดไหม,kŏr chái toh-rá-sap kun nòi dâai mái,Can I use your phone?,sound:wp1-xxx.mp3
+13. ขอเมนูหน อย ครับ/คะ,kŏr may-noo nòi kráp/ká,"Can I have the menu, please?",sound:wp1-xxx.mp3
+14. ขอขนมปั งอีกไดไหม ครับ/คะ,kŏr kà-nŏm pang èek dâai mái kráp/ká,"Can I have some more bread, please?",sound:wp1-xxx.mp3
+15. นั่งตรงโนนไดไหม ครับ/คะ,nâng dtrong nóhn dâai mái kráp/ká,Can I sit over there?,sound:wp1-xxx.mp3
+16. ถือใหหน อยไดไหม ครับ/คะ,tĕu hâi nòi dâai mái kráp/ká,Can you carry this for me?,sound:wp1-xxx.mp3
+17. ชวยอะไรหน อยไดไหม ครับ/คะ,chûay a-rai nòi dâai mái kráp/ká,Can you do me a favor?,sound:wp1-xxx.mp3
+18. พูดดังอีกนิ ดไดไหม ครับ/คะ,pôot dang èek nít dâai mái kráp/ká,"Can you speak louder, please?",sound:wp1-xxx.mp3
+19. พูดชาๆหน อยไดไหม ครับ/คะ,pôot cháa cháa nòi dâai mái kráp/ká,"Can you speak slowly, please?",sound:wp1-xxx.mp3
+20. ชวยแปลนี่ ใหหน อยไดไหม,chûay bplae nêe hâi nòi dâai mái,Can you translate this for me?,sound:wp1-xxx.mp3
+21. มีแฟนหรือยัง,mee faen rĕu yang,Do you have a boyfriend/girlfriend?,sound:wp1-xxx.mp3
+22. แบบนี้ เบอรสิบเอ็ดมีไหม,bàep née ber sìp èt mee mái,Do you have this in size 11?,sound:wp1-xxx.mp3
+23. ทํากับขาวเป็ นไหม,tam gàp khâao bpen mái,Do you know how to cook?,sound:wp1-xxx.mp3
+24. ขับรถเป็ นไหม,kàp rót bpen mái,Do you know how to drive?,sound:wp1-xxx.mp3
+25. วายนํ้าเป็ นไหม,wâai náam bpen mái,Do you know how to swim?,sound:wp1-xxx.mp3
+26. ชอบดูทีวีไหม,chôp doo tee-wee mái,Do you like to watch TV?,sound:wp1-xxx.mp3
+27. เลนกีฬาอะไรไหม,lâyn gee-laa a-rai mái,Do you play any sports?,sound:wp1-xxx.mp3
+28. พูดภาษาอังกฤษเป็ นไหม,pôot paa-săa ang-grit bpen mái,Do you speak English?,sound:wp1-xxx.mp3
+29. รับบัตรเครดิตไหม,ráp bàt kay-dìt mái,Do you take credit cards?,sound:wp1-xxx.mp3
+30. (ที่น่ี ) มีใครพูดภาษาอังกฤษเป็ นไหม,(têe nêe) mee krai pôot paa-săa ang-grit bpen mái,Does anyone here speak English?,sound:wp1-xxx.mp3
+31. อยาทําแบบนั้น,yàa tam bàep nán,Don't do that.,sound:wp1-xxx.mp3
+32. ไมตองหวง,mâi dtông hùang,Don't worry.,sound:wp1-xxx.mp3
+33. คุณ (พูด) วาอะไรนะ,kun pôot wâa a-rai ná,What did you say?,sound:wp1-xxx.mp3
+34. ชางมันเหอะ,châng man hùh,Forget it.<br />( used to tell someone that something is not important and not to worry about it ) ,sound:wp1-xxx.mp3
+35. ตาม ผม/ฉัน มา,dtaam pŏm/chán maa,Follow me.,sound:wp1-xxx.mp3
+36. บางครั้ง,baang kráng,From time to time.,sound:wp1-xxx.mp3
+37. สุขสันตวันเกิด,sùk săn wan gèrt,Happy birthday.,sound:wp1-xxx.mp3
+38. เคยทําแบบนี้ มากอนหรือเปลา,koie tam bàep née maa gòn rĕu bplàao,Have you done this before? ,sound:wp1-xxx.mp3
+39. กินอะไรหรือยัง,gin a-rai rĕu yang,Have you eaten yet?,sound:wp1-xxx.mp3
+40. เคยดูหนังเรื่องนี้ หรือยัง,koie doo năng rêuang née rĕu yang,Have you seen this movie?,sound:wp1-xxx.mp3
+41. เขาไมเคยใหอะไรฉันเลย,kháo mâi koie hâi a-rai chán loie,He never gives me anything.,sound:wp1-xxx.mp3
+42. รูไดยังไง,róo dâai yang ngai,How do you know?,sound:wp1-xxx.mp3
+43. ออกเสียงยังไง,òk sĭang yang ngai,How do you pronounce that?,sound:wp1-xxx.mp3
+44. ภาษาไทยพูดวายังไง,paa-săa tai pôot wâa yang ngai,How do you say it in Thai?,sound:wp1-xxx.mp3
+45. สะกดยังไง,sà-gòt yang ngai,How do you spell it?,sound:wp1-xxx.mp3
+46. ให ผม/ฉัน ชวยไหม,hâi pŏm/chán chûay mái,Do you want me to help?,sound:wp1-xxx.mp3
+47. หลับตาทํายังไดเลย,làp dtaa tam yang dâai loie,I can do it with my eyes shut.,sound:wp1-xxx.mp3
+48. ใครๆก็ทําได,krai krai gôr tam dâai,Anyone can do it.,sound:wp1-xxx.mp3
+49. ทานไมไหวแลวครับ/คะ ขอบคุณ ครับ/คะ,taan mâi wăai láew kráp/kâ kòp kun kráp/kâ,"I can't eat anymore, thank you.",sound:wp1-xxx.mp3
+50. ฉันไมชอบใหใครมาสั่ง,chăn mâi chôp hâi krai maa sàng,I don't like it when people give me orders.,sound:wp1-xxx.mp3
+51. โกหกทั้งเพ!,go-hòk táng pay,a whole bunch of lies!<br />a whole collection or series of lies.<br />a pack of lies.,sound:wp1-xxx.mp3
+52. ไมน่ังใกลๆเด็กนะ ครับ/คะ,mâi nâng glâi glâi dèk ná kráp/ká,I don't want to be seated next to a child.,sound:wp1-xxx.mp3
+53. คืนนี้ ผมขอออกไปเที่ยวกับเพื่อนๆไดไหม,keun née pŏm kŏr òk bpai tîeow gàp pêuan pêuan dâai mái,Can I go out with my friends tonight?,sound:wp1-xxx.mp3
+54. พอมั้ย,por mái,Is it enough?,sound:wp1-xxx.mp3
+55. ฉันหาแวนตาผมไมเจอ คุณเห็นมั่งไหม,chăn hăa wâen dtaa pŏm mâi jer kun hĕn mâng mái,"I can't ﬁnd my glasses, have you seen them?",sound:wp1-xxx.mp3
+56. เราเคยเจอกันมากอนหรือเปลา,rao koie jer gan maa gòn rĕu bplàao,Have we met before?,sound:wp1-xxx.mp3
+57. เกือบจําคุณไม่ได้แน่ะ,geup jam kun mâai dâai nàe,I almost didn't recognize you.,sound:wp1-xxx.mp3
+58. ขอโทษที่ใหรอ,kŏr tôht têe hâi ror,Sorry to keep you waiting.,sound:wp1-xxx.mp3
+59. กําลังรีบ,gam lang rêep,I am in a hurry.,sound:wp1-xxx.mp3
+60. ตามสบาย ไมตองรีบ,dtaam sà baai mâi dtông rêep,Take your time.,sound:wp1-xxx.mp3
+61. หยุดเดีย๋นี้นะ,yùt diĕow née ná,Stop it right now !,sound:wp1-xxx.mp3
+62. อยาลืมนะ,yàa leum ná,Don't forget.,sound:wp1-xxx.mp3
+63. ฝั นไปเถอะ,făn bpai tùh,In your dreams!,sound:wp1-xxx.mp3
+64. อยาแมแตจะคิด,yàa máe dtàe jà kít,Don't even think about it.,sound:wp1-xxx.mp3
+65. ทําตามที่หัวใจคุณบอก,tam dtaam têe hŭa jai kun bòk,Follow your heart.,sound:wp1-xxx.mp3
